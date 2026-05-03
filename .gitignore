@@ -1,0 +1,31 @@
+# env
+.env
+.env.*
+!.env.example
+
+# deps
+node_modules
+apps/be/node_modules
+apps/fe/node_modules
+
+# build
+apps/be/dist
+apps/fe/dist
+
+# turbo
+.turbo
+
+# prisma
+apps/be/generated
+
+# logs
+*.log
+npm-debug.log*
+
+# os
+.DS_Store
+Thumbs.db
+
+# ide
+.vscode
+.idea
