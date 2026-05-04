@@ -11,3 +11,298 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Company {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String   @db.VarChar
+  oib           String?   @db.VarChar(11)
+  mbs           String?   @db.VarChar(20)
+  logo_url      String?   @db.VarChar
+  password      String   @db.VarChar
+  phone         String   @db.VarChar
+  email         String   @db.VarChar
+  website       String?   @db.VarChar
+  is_buyer      Boolean
+  is_seller     Boolean
+  is_verified   Boolean  @default(false)
+  trust_score   Decimal?  
+  carbon_credit Decimal?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  payment_methods  CompanyPaymentMethod[]
+  locations        LocationCompany[]
+  listings         Listing[]
+  orders_as_buyer  Order[]                @relation("BuyerCompany")
+  orders_as_seller Order[]                @relation("SellerCompany")
+  alerts           Alert[]
+  saved_listings   SavedListing[]
+  notifications    Notification[]
+}
+
+model CompanyPaymentMethod {
+  id         String      @id @default(uuid()) @db.Uuid
+  company_id String      @db.Uuid
+  type       PaymentType
+  is_default Boolean
+  iban       String      @db.VarChar
+  bank_name  String      @db.VarChar
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+
+  company Company @relation(fields: [company_id], references: [id])
+  orders  Order[]
+}
+
+model Location {
+  id            String   @id @default(uuid()) @db.Uuid
+  country       String   @db.VarChar
+  city          String   @db.VarChar
+  zip           String   @db.VarChar
+  street        String   @db.VarChar
+  street_number String   @db.VarChar
+  latitude      Decimal
+  longitude     Decimal
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  companies             LocationCompany[]
+  listings              Listing[]
+  orders_as_pickup      Order[]           @relation("PickupLocation")
+  orders_as_destination Order[]           @relation("Destination")
+}
+
+model LocationCompany {
+  id          String   @id @default(uuid()) @db.Uuid
+  company_id  String   @db.Uuid
+  location_id String   @db.Uuid
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  company  Company  @relation(fields: [company_id], references: [id])
+  location Location @relation(fields: [location_id], references: [id])
+}
+
+model Listing {
+  id                    String            @id @default(uuid()) @db.Uuid
+  company_id            String            @db.Uuid
+  location_id           String            @db.Uuid
+  title                 String            @db.VarChar
+  description           String
+  material_type         MaterialType
+  condition             MaterialCondition
+  listing_category      ListingCategory
+  isReusable            Boolean
+  quantity              Decimal
+  unit                  UnitType
+  min_order             Decimal
+  price_per_unit        Decimal
+  currency              String            @db.VarChar
+  delivery_available    Boolean         @default(false)
+  available_until       DateTime          @db.Date
+  is_recurring          Boolean             @default(false)
+  recurring_schedule_id String            @db.Uuid
+  is_active             Boolean            @default(true)
+  created_at            DateTime          @default(now())
+  updated_at            DateTime          @updatedAt
+
+  company            Company           @relation(fields: [company_id], references: [id])
+  location           Location          @relation(fields: [location_id], references: [id])
+  recurring_schedule RecurringSchedule @relation(fields: [recurring_schedule_id], references: [id])
+
+  images              ListingImage[]
+  orders              Order[]
+  pickup_slots        PickupSlot[]
+  saved_by            SavedListing[]
+  notifications       Notification[]
+  recurring_schedules RecurringSchedule[] @relation("RecurringScheduleListing")
+}
+
+model ListingImage {
+  id         String   @id @default(uuid()) @db.Uuid
+  listing_id String   @db.Uuid
+  image_url  String   @db.VarChar
+  is_primary Boolean
+  sort_order Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  listing Listing @relation(fields: [listing_id], references: [id])
+}
+
+model Order {
+  id                 String        @id @default(uuid()) @db.Uuid
+  listing_id         String        @db.Uuid
+  buyer_company_id   String        @db.Uuid
+  seller_company_id  String        @db.Uuid
+  pickup_slot_id     String        @db.Uuid
+  company_payment_id String        @db.Uuid
+  pickup_location_id String        @db.Uuid
+  destination_id     String        @db.Uuid
+  quantity           Decimal
+  unit               UnitType
+  currency           String        @db.VarChar
+  price_per_unit     Decimal
+  subtotal           Decimal
+  delivery_cost      Decimal
+  platform_fee       Decimal
+  total              Decimal
+  pickup_method      PickupMethod
+  qr_code            String        @db.VarChar
+  status             OrderStatus
+  payment_status     PaymentStatus
+  payment_type       PaymentType
+  co2_saved_kg       Decimal
+  created_at         DateTime      @default(now())
+  updated_at         DateTime      @updatedAt
+
+  listing         Listing              @relation(fields: [listing_id], references: [id])
+  buyer_company   Company              @relation("BuyerCompany", fields: [buyer_company_id], references: [id])
+  seller_company  Company              @relation("SellerCompany", fields: [seller_company_id], references: [id])
+  pickup_slot     PickupSlot           @relation(fields: [pickup_slot_id], references: [id])
+  company_payment CompanyPaymentMethod @relation(fields: [company_payment_id], references: [id])
+  pickup_location Location             @relation("PickupLocation", fields: [pickup_location_id], references: [id])
+  destination     Location             @relation("Destination", fields: [destination_id], references: [id])
+
+  ratings Rating[]
+}
+
+model Rating {
+  id                   String   @id @default(uuid()) @db.Uuid
+  order_id             String   @db.Uuid
+  rating_accuracy      Int
+  rating_condition     Int
+  rating_communication Int
+  rating_comment       String
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+
+  order Order @relation(fields: [order_id], references: [id])
+}
+
+model Alert {
+  id                 String            @id @default(uuid()) @db.Uuid
+  company_id         String            @db.Uuid
+  category           ListingCategory
+  material_type      MaterialType
+  condition          MaterialCondition
+  max_distance_km    Int
+  max_price_per_unit Decimal
+  min_quantity       Decimal
+  unit               UnitType
+  is_active          Boolean            @default(true)
+  created_at         DateTime          @default(now())
+  updated_at         DateTime          @updatedAt
+
+  company Company @relation(fields: [company_id], references: [id])
+}
+
+model PickupSlot {
+  id           String   @id @default(uuid()) @db.Uuid
+  listing_id   String   @db.Uuid
+  date         DateTime @db.Date
+  start_time   DateTime @db.Time
+  end_time     DateTime @db.Time
+  is_available Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  listing Listing @relation(fields: [listing_id], references: [id])
+  orders  Order[]
+}
+
+model RecurringSchedule {
+  id              String   @id @default(uuid()) @db.Uuid
+  listing_id      String   @db.Uuid
+  cron_expression String   @db.VarChar
+  start_date      DateTime @db.Date
+  end_date        DateTime @db.Date
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  listing  Listing   @relation("RecurringScheduleListing", fields: [listing_id], references: [id])
+  listings Listing[]
+}
+
+model SavedListing {
+  id         String   @id @default(uuid()) @db.Uuid
+  company_id String   @db.Uuid
+  listing_id String   @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  company Company @relation(fields: [company_id], references: [id])
+  listing Listing @relation(fields: [listing_id], references: [id])
+}
+
+model Notification {
+  id         String   @id @default(uuid()) @db.Uuid
+  company_id String   @db.Uuid
+  listing_id String   @db.Uuid
+  wasSeen    Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  company Company @relation(fields: [company_id], references: [id])
+  listing Listing @relation(fields: [listing_id], references: [id])
+}
+
+enum MaterialType {
+  cardboard
+  plastic
+  wood
+  metal
+  glass
+  other
+}
+
+enum MaterialCondition {
+  A
+  B
+  C
+}
+
+enum UnitType {
+  kg
+  T
+  kom
+}
+
+enum OrderStatus {
+  waiting
+  confirmed
+  in_progress
+  picked_up
+  completed
+  cancelled
+}
+
+enum PickupMethod {
+  pick_up
+  delivery
+}
+
+enum PaymentStatus {
+  waiting
+  paid
+  refunded
+}
+
+enum PaymentType {
+  card
+  bank_transfer
+  cash
+}
+
+enum ListingCategory {
+  boxes
+  pallets
+  styrofoam
+  stretch_film
+  plastic
+  ibc_tanks
+  big_bags
+  bubble_wrap
+  other
+}
