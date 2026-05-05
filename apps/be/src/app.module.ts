@@ -7,6 +7,7 @@ import { PrismaModule } from './common/prisma/prisma.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { ContentTypeMiddleware } from './common/middleware/content-type.middleware';
 import { AuthModule } from './modules/auth/auth.module';
+import { CompaniesModule } from './modules/companies/companies.module';
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { AuthModule } from './modules/auth/auth.module';
         }]),
         PrismaModule,
         AuthModule,
+        CompaniesModule,
     ],
     controllers: [AppController],
     providers: [
