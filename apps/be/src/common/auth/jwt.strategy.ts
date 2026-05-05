@@ -18,8 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         return {
             id: payload.id,
             isAdmin: payload.isAdmin,
-            isBuyer: payload.isBuyer,
-            isSeller: payload.isSeller,
+            isVerified: payload.isVerified,
         };
     }
 }
