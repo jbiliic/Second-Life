@@ -8,6 +8,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { ContentTypeMiddleware } from './common/middleware/content-type.middleware';
 import { AuthModule } from './modules/auth/auth.module';
 import { CompaniesModule } from './modules/companies/companies.module';
+import { ListingsModule } from './modules/listings/listings.module';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { CompaniesModule } from './modules/companies/companies.module';
         PrismaModule,
         AuthModule,
         CompaniesModule,
+        ListingsModule,
     ],
     controllers: [AppController],
     providers: [
