@@ -1,34 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { ListingsService } from './listings.service';
-import { CreateListingDto } from './dto/create-listing.dto';
-import { UpdateListingDto } from './dto/update-listing.dto';
+import { UserGuard } from '../../common/auth/guards/user.guard';
+import { AuthenticatedUser } from '../../common/auth/interfaces/authenticatedUser.interface';
+import { GetListingsQueryDto } from './dto/getListingQuery.dto';
+import { CreateListingDto } from './dto/createListing.dto';
 
 @Controller('listings')
 export class ListingsController {
-  constructor(private readonly listingsService: ListingsService) {}
+    constructor(private readonly listingsService: ListingsService) { }
 
-  @Post()
-  create(@Body() createListingDto: CreateListingDto) {
-    return this.listingsService.create(createListingDto);
-  }
+    @Post()
+    @UseGuards(UserGuard)
+    createListing(
+        @Req() req: { user: AuthenticatedUser },
+        @Body() dto: CreateListingDto,
+    ) {
+        return this.listingsService.createListing(req.user.id, dto);
+    }
 
-  @Get()
-  findAll() {
-    return this.listingsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.listingsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateListingDto: UpdateListingDto) {
-    return this.listingsService.update(+id, updateListingDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.listingsService.remove(+id);
-  }
+    @Get()
+    getListings(@Query() query: GetListingsQueryDto) {
+        return this.listingsService.getListingsPaginated(query);
+    }
 }
