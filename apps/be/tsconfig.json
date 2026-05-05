@@ -20,7 +20,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "ignoreDeprecations": "6.0",
-    "types": ["node"]
+    "types": ["node"],
+    "strictPropertyInitialization": false
   }
 }

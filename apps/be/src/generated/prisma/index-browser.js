@@ -120,9 +120,268 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.CompanyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  oib: 'oib',
+  mbs: 'mbs',
+  logo_url: 'logo_url',
+  password: 'password',
+  phone: 'phone',
+  email: 'email',
+  website: 'website',
+  is_verified: 'is_verified',
+  trust_score: 'trust_score',
+  carbon_credit: 'carbon_credit',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.CompanyPaymentMethodScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  type: 'type',
+  is_default: 'is_default',
+  iban: 'iban',
+  bank_name: 'bank_name',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.LocationScalarFieldEnum = {
+  id: 'id',
+  country: 'country',
+  city: 'city',
+  zip: 'zip',
+  street: 'street',
+  street_number: 'street_number',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.LocationCompanyScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  location_id: 'location_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ListingScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  location_id: 'location_id',
+  title: 'title',
+  description: 'description',
+  material_type: 'material_type',
+  condition: 'condition',
+  listing_category: 'listing_category',
+  isReusable: 'isReusable',
+  quantity: 'quantity',
+  unit: 'unit',
+  min_order: 'min_order',
+  price_per_unit: 'price_per_unit',
+  currency: 'currency',
+  delivery_available: 'delivery_available',
+  available_until: 'available_until',
+  is_recurring: 'is_recurring',
+  recurring_schedule_id: 'recurring_schedule_id',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ListingImageScalarFieldEnum = {
+  id: 'id',
+  listing_id: 'listing_id',
+  image_url: 'image_url',
+  is_primary: 'is_primary',
+  sort_order: 'sort_order',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.OrderScalarFieldEnum = {
+  id: 'id',
+  listing_id: 'listing_id',
+  buyer_company_id: 'buyer_company_id',
+  seller_company_id: 'seller_company_id',
+  pickup_slot_id: 'pickup_slot_id',
+  company_payment_id: 'company_payment_id',
+  pickup_location_id: 'pickup_location_id',
+  destination_id: 'destination_id',
+  quantity: 'quantity',
+  unit: 'unit',
+  currency: 'currency',
+  price_per_unit: 'price_per_unit',
+  subtotal: 'subtotal',
+  delivery_cost: 'delivery_cost',
+  platform_fee: 'platform_fee',
+  total: 'total',
+  pickup_method: 'pickup_method',
+  qr_code: 'qr_code',
+  status: 'status',
+  payment_status: 'payment_status',
+  payment_type: 'payment_type',
+  co2_saved_kg: 'co2_saved_kg',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.RatingScalarFieldEnum = {
+  id: 'id',
+  order_id: 'order_id',
+  rating_accuracy: 'rating_accuracy',
+  rating_condition: 'rating_condition',
+  rating_communication: 'rating_communication',
+  rating_comment: 'rating_comment',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.AlertScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  category: 'category',
+  material_type: 'material_type',
+  condition: 'condition',
+  max_distance_km: 'max_distance_km',
+  max_price_per_unit: 'max_price_per_unit',
+  min_quantity: 'min_quantity',
+  unit: 'unit',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.PickupSlotScalarFieldEnum = {
+  id: 'id',
+  listing_id: 'listing_id',
+  date: 'date',
+  start_time: 'start_time',
+  end_time: 'end_time',
+  is_available: 'is_available',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.RecurringScheduleScalarFieldEnum = {
+  id: 'id',
+  listing_id: 'listing_id',
+  cron_expression: 'cron_expression',
+  start_date: 'start_date',
+  end_date: 'end_date',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.SavedListingScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  listing_id: 'listing_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  listing_id: 'listing_id',
+  wasSeen: 'wasSeen',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+exports.PaymentType = exports.$Enums.PaymentType = {
+  card: 'card',
+  bank_transfer: 'bank_transfer',
+  cash: 'cash'
+};
+
+exports.MaterialType = exports.$Enums.MaterialType = {
+  cardboard: 'cardboard',
+  plastic: 'plastic',
+  wood: 'wood',
+  metal: 'metal',
+  glass: 'glass',
+  other: 'other'
+};
+
+exports.MaterialCondition = exports.$Enums.MaterialCondition = {
+  A: 'A',
+  B: 'B',
+  C: 'C'
+};
+
+exports.ListingCategory = exports.$Enums.ListingCategory = {
+  boxes: 'boxes',
+  pallets: 'pallets',
+  styrofoam: 'styrofoam',
+  stretch_film: 'stretch_film',
+  plastic: 'plastic',
+  ibc_tanks: 'ibc_tanks',
+  big_bags: 'big_bags',
+  bubble_wrap: 'bubble_wrap',
+  other: 'other'
+};
+
+exports.UnitType = exports.$Enums.UnitType = {
+  kg: 'kg',
+  T: 'T',
+  kom: 'kom'
+};
+
+exports.PickupMethod = exports.$Enums.PickupMethod = {
+  pick_up: 'pick_up',
+  delivery: 'delivery'
+};
+
+exports.OrderStatus = exports.$Enums.OrderStatus = {
+  waiting: 'waiting',
+  confirmed: 'confirmed',
+  in_progress: 'in_progress',
+  picked_up: 'picked_up',
+  completed: 'completed',
+  cancelled: 'cancelled'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  waiting: 'waiting',
+  paid: 'paid',
+  refunded: 'refunded'
+};
 
 exports.Prisma.ModelName = {
-
+  Company: 'Company',
+  CompanyPaymentMethod: 'CompanyPaymentMethod',
+  Location: 'Location',
+  LocationCompany: 'LocationCompany',
+  Listing: 'Listing',
+  ListingImage: 'ListingImage',
+  Order: 'Order',
+  Rating: 'Rating',
+  Alert: 'Alert',
+  PickupSlot: 'PickupSlot',
+  RecurringSchedule: 'RecurringSchedule',
+  SavedListing: 'SavedListing',
+  Notification: 'Notification'
 };
 
 /**
