@@ -18,7 +18,11 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly mailService: MailService
     ) { }
+    /*
+    TODO: implementirat redis
+    */
     private verificationTokens = new Map<string, TokenPayload>();
+    private resetTokens = new Map<string, { companyId: string; newPassword: string; expires: Date }>();
 
     async register(registerDto: RegisterCompanyDto) {
         const existingCompany = await this.prisma.company.findUnique({ where: { email: registerDto.email } });
@@ -87,5 +91,46 @@ export class AuthService {
         const token = this.jwtService.sign(payload);
 
         return { access_token: token };
+    }
+
+    async resetPassword(email: string) {
+        const company = await this.prisma.company.findFirst({ where: { email } });
+        if (!company) throw new NotFoundException('Company not found');
+
+        const newPassword = randomBytes(8).toString('hex');
+        const token = randomBytes(32).toString('hex');
+        const expires = new Date(Date.now() + 1000 * 60 * 5); // 5 minutes
+
+        this.resetTokens.set(token, {
+            companyId: company.id,
+            newPassword,
+            expires,
+        });
+
+        await this.mailService.sendPasswordResetEmail(company.email, newPassword, token);
+
+        return { message: 'Password reset email sent' };
+    }
+
+    async confirmResetPassword(token: string) {
+        const payload = this.resetTokens.get(token);
+
+        if (!payload) throw new NotFoundException('Invalid reset token');
+
+        if (payload.expires < new Date()) {
+            this.resetTokens.delete(token);
+            throw new BadRequestException('Reset token has expired');
+        }
+
+        const hashed = await bcrypt.hash(payload.newPassword, 10);
+
+        await this.prisma.company.update({
+            where: { id: payload.companyId },
+            data: { password: hashed },
+        });
+
+        this.resetTokens.delete(token);
+
+        return { message: 'Password reset successful' };
     }
 }

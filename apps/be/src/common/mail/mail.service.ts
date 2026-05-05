@@ -33,31 +33,33 @@ export class MailService {
         });
     }
 
-    async sendPasswordResetEmail(to: string, token: string) {
-        const url = `${process.env.APP_URL}/auth/reset-password?token=${token}`;
+    async sendPasswordResetEmail(to: string, newPassword: string, token: string) {
+        const url = `${process.env.APP_URL}/auth/confirm-reset-password?token=${token}`;
 
         await this.mailer.sendMail({
             to,
-            subject: 'Reset your password',
+            subject: 'Password Reset Request',
             html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Password Reset</h2>
-          <p>You requested a password reset. Click below to proceed.</p>
-          <p>This link expires in <strong>5 minutes</strong>.</p>
-          <a href="${url}" style="
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: #4F46E5;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            margin: 16px 0;
-          ">
-            Reset Password
-          </a>
-          <p>If you didn't request this, you can ignore this email.</p>
-        </div>
-      `,
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>Password Reset</h2>
+        <p>Click the button below to reset your password.</p>
+        <p>Your new temporary password will be:</p>
+        <p style="font-size: 24px; font-weight: bold; letter-spacing: 2px;">${newPassword}</p>
+        <p>This link expires in <strong>5 minutes</strong>.</p>
+        <a href="${url}" style="
+          display: inline-block;
+          padding: 12px 24px;
+          background-color: #4F46E5;
+          color: white;
+          text-decoration: none;
+          border-radius: 6px;
+          margin: 16px 0;
+        ">
+          Confirm Password Reset
+        </a>
+        <p>If you didn't request this, you can ignore this email.</p>
+      </div>
+    `,
         });
     }
 }
