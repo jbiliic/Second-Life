@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { CreateListingDto } from './dto/createListing.dto';
 import { GetListingsQueryDto } from './dto/getListingQuery.dto';
 import { calculateDistance } from '../../common/utils/calculateDistance.util';
 import { PaginatedListingsDto } from './dto/getListingsPaginated.dto';
+import { GetListingDto } from './dto/getSingleListing.dto';
+import { UpdateListingDto } from './dto/updateListing.dto';
 
 @Injectable()
 export class ListingsService {
@@ -135,5 +137,112 @@ export class ListingsService {
         };
     }
 
+    async deleteListing(id: string, companyId: string): Promise<void> {
+        const existing = await this.prisma.listing.findUniqueOrThrow({
+            where: { id },
+            select: { company_id: true },
+        });
 
+        if (existing.company_id !== companyId) {
+            throw new ForbiddenException('You do not own this listing');
+        }
+
+        await this.prisma.$transaction([
+            this.prisma.listingImage.deleteMany({ where: { listing_id: id } }),
+            this.prisma.pickupSlot.deleteMany({ where: { listing_id: id } }),
+            this.prisma.recurringSchedule.deleteMany({ where: { listing_id: id } }),
+            this.prisma.savedListing.deleteMany({ where: { listing_id: id } }),
+            this.prisma.notification.deleteMany({ where: { listing_id: id } }),
+            this.prisma.listing.delete({ where: { id } }),
+        ]);
+    }
+
+    async getListingById(id: string, requestingCompanyId?: string, lat?: number, lng?: number): Promise<GetListingDto> {
+        const listing = await this.prisma.listing.findUniqueOrThrow({
+            where: { id },
+            include: {
+                images: {
+                    orderBy: { sort_order: 'asc' },
+                },
+                location: true,
+                company: {
+                    select: {
+                        id: true,
+                        name: true,
+                        logo_url: true,
+                        trust_score: true,
+                    },
+                },
+                saved_by: requestingCompanyId
+                    ? { where: { company_id: requestingCompanyId }, take: 1 }
+                    : false,
+            },
+        });
+
+        return {
+            id: listing.id,
+            title: listing.title,
+            description: listing.description,
+            material_type: listing.material_type,
+            condition: listing.condition,
+            listing_category: listing.listing_category,
+            isReusable: listing.isReusable,
+            quantity: Number(listing.quantity),
+            unit: listing.unit,
+            min_order: Number(listing.min_order),
+            price_per_unit: Number(listing.price_per_unit),
+            currency: listing.currency,
+            delivery_available: listing.delivery_available,
+            available_until: listing.available_until.toISOString(),
+            is_recurring: listing.is_recurring,
+            is_active: listing.is_active,
+            created_at: listing.created_at.toISOString(),
+            company: {
+                id: listing.company.id,
+                name: listing.company.name,
+                logo_url: listing.company.logo_url ?? null,
+                trust_score: listing.company.trust_score ? Number(listing.company.trust_score) : null,
+            },
+            location: {
+                city: listing.location.city,
+                country: listing.location.country,
+                street: listing.location.street,
+                street_number: listing.location.street_number,
+                zip: listing.location.zip,
+                latitude: Number(listing.location.latitude),
+                longitude: Number(listing.location.longitude),
+            },
+            images: listing.images.map(img => ({
+                id: img.id,
+                image_url: img.image_url,
+                is_primary: img.is_primary,
+                sort_order: img.sort_order,
+            })),
+            distance_km: lat && lng
+                ? calculateDistance(lat, lng, Number(listing.location.latitude), Number(listing.location.longitude))
+                : null,
+            is_saved: Array.isArray(listing.saved_by) ? listing.saved_by.length > 0 : false,
+        };
+    }
+
+    async updateListing(id: string, companyId: string, dto: UpdateListingDto): Promise<GetListingDto> {
+        const existing = await this.prisma.listing.findUniqueOrThrow({
+            where: { id },
+            select: { company_id: true },
+        });
+
+        if (existing.company_id !== companyId) {
+            throw new ForbiddenException('You do not own this listing');
+        }
+
+        await this.prisma.listing.update({
+            where: { id },
+            data: {
+                ...dto,
+                ...(dto.available_until && { available_until: new Date(dto.available_until) }),
+            },
+        });
+
+        return this.getListingById(id, companyId);
+    }
 }
