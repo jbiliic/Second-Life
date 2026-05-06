@@ -50,7 +50,9 @@ export class ListingsService {
             },
         });
     }
-
+    /*
+    TODO: ucinit ovu funkciju manje groznom
+    */
     async getListingsPaginated(query: GetListingsQueryDto): Promise<PaginatedListingsDto> {
         const page = query.page ?? 1;
         const limit = query.limit ?? 10;
@@ -77,6 +79,86 @@ export class ListingsService {
             ? { [query.sort_by === 'price' ? 'price_per_unit' : query.sort_by]: query.sort_order ?? 'desc' }
             : { created_at: 'desc' };
 
+        const needsDistanceProcessing = !!(query.lat && query.lng && (query.max_distance_km || query.sort_by === 'distance'));
+
+        if (needsDistanceProcessing) {
+            const slim = await this.prisma.listing.findMany({
+                where,
+                select: {
+                    id: true,
+                    location: {
+                        select: {
+                            latitude: true,
+                            longitude: true,
+                        },
+                    },
+                },
+            });
+
+            let withDistance = slim.map(l => ({
+                id: l.id,
+                distance_km: calculateDistance(
+                    query.lat!,
+                    query.lng!,
+                    Number(l.location.latitude),
+                    Number(l.location.longitude),
+                ),
+            }));
+
+            if (query.max_distance_km) {
+                withDistance = withDistance.filter(l => l.distance_km <= query.max_distance_km!);
+            }
+
+            if (query.sort_by === 'distance') {
+                withDistance.sort((a, b) => a.distance_km - b.distance_km);
+            }
+
+            const total = withDistance.length;
+            const total_pages = Math.ceil(total / limit);
+            const pageIds = withDistance.slice(skip, skip + limit);
+
+            if (pageIds.length === 0) {
+                return { data: [], page, total, total_pages, next: null, prev: page > 1 ? page - 1 : null };
+            }
+
+            const distanceMap = new Map(pageIds.map(l => [l.id, l.distance_km]));
+            const listings = await this.prisma.listing.findMany({
+                where: { id: { in: pageIds.map(l => l.id) } },
+                include: {
+                    images: { where: { is_primary: true }, take: 1 },
+                    location: true,
+                    company: { select: { name: true } },
+                },
+            });
+
+            const sorted = pageIds
+                .map(({ id }) => listings.find(l => l.id === id)!)
+                .filter(Boolean);
+
+            const data = sorted.map(listing => ({
+                id: listing.id,
+                title: listing.title,
+                city: listing.location.city,
+                company_name: listing.company.name,
+                cover_image_url: listing.images[0]?.image_url ?? null,
+                material_type: listing.material_type,
+                condition: listing.condition,
+                unit: listing.unit,
+                price_per_unit: Number(listing.price_per_unit),
+                currency: listing.currency,
+                distance_km: distanceMap.get(listing.id) ?? null,
+            }));
+
+            return {
+                data,
+                page,
+                total,
+                total_pages,
+                next: page < total_pages ? page + 1 : null,
+                prev: page > 1 ? page - 1 : null,
+            };
+        }
+
         const [total, listings] = await this.prisma.$transaction([
             this.prisma.listing.count({ where }),
             this.prisma.listing.findMany({
@@ -87,16 +169,12 @@ export class ListingsService {
                 include: {
                     images: { where: { is_primary: true }, take: 1 },
                     location: true,
-                    company: {
-                        select: {
-                            name: true,
-                        },
-                    },
+                    company: { select: { name: true } },
                 },
             }),
         ]);
 
-        let result = listings.map(listing => ({
+        const data = listings.map(listing => ({
             id: listing.id,
             title: listing.title,
             city: listing.location.city,
@@ -117,18 +195,10 @@ export class ListingsService {
                 : null,
         }));
 
-        if (query.lat && query.lng && query.max_distance_km) {
-            result = result.filter(l => l.distance_km! <= query.max_distance_km!);
-        }
-
-        if (query.sort_by === 'distance' && query.lat && query.lng) {
-            result = result.sort((a, b) => (a.distance_km ?? 0) - (b.distance_km ?? 0));
-        }
-
         const total_pages = Math.ceil(total / limit);
 
         return {
-            data: result,
+            data,
             page,
             total,
             total_pages,
@@ -242,7 +312,6 @@ export class ListingsService {
                 ...(dto.available_until && { available_until: new Date(dto.available_until) }),
             },
         });
-
         return this.getListingById(id, companyId);
     }
 }
