@@ -43,14 +43,14 @@ export class CompaniesService {
         const location = await this.prisma.location.create({
             data: {
                 ...locationData,
-                company: { connect: { id: companyId } },
+                companies: { connect: { id: companyId } },
             },
         });
         return location;
     }
 
     async getLocations(companyId: string) {
-        return await this.prisma.location.findMany({
+        const locations = await this.prisma.location.findMany({
             include: {
                 companies: {
                     where: {
@@ -59,6 +59,16 @@ export class CompaniesService {
                 },
             },
         });
+        return locations.map((loc) => ({
+            id: loc.id,
+            street: loc.street,
+            street_number: loc.street_number,
+            city: loc.city,
+            zip: loc.zip,
+            country: loc.country,
+            latitude: Number(loc.latitude),
+            longitude: Number(loc.longitude),
+        })) as LocationDto[];
     }
 
     async createAndAddPayment(companyId: string, paymentData: Omit<PaymentMethodDto, 'id'>) {

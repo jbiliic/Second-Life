@@ -6,10 +6,14 @@ import { calculateDistance } from '../../common/utils/calculateDistance.util';
 import { PaginatedListingsDto } from './dto/getListingsPaginated.dto';
 import { GetListingDto } from './dto/getSingleListing.dto';
 import { UpdateListingDto } from './dto/updateListing.dto';
+import { CronRelistService } from '../cronRelist/cronRelist.service';
 
 @Injectable()
 export class ListingsService {
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly cronRelistService: CronRelistService,
+    ) {}
 
     async createListing(companyId: string, dto: CreateListingDto) {
         const listing = await this.prisma.listing.create({
@@ -33,15 +37,23 @@ export class ListingsService {
                 images: {
                     create: dto.images,
                 },
-                pickup_slots: dto.pickup_slots ? {
-                    create: dto.pickup_slots.map(slot => ({
-                        ...slot,
-                        date: new Date(slot.date),
-                    })),
-                } : undefined,
-                recurring_schedules: dto.recurring_schedule ? {
-                    create: dto.recurring_schedule,
-                } : undefined,
+                pickup_slots: dto.pickup_slots
+                    ? {
+                          create: dto.pickup_slots.map((slot) => ({
+                              ...slot,
+                              date: new Date(slot.date),
+                          })),
+                      }
+                    : undefined,
+                recurring_schedules: dto.recurring_schedule
+                    ? {
+                          create: {
+                              ...dto.recurring_schedule,
+                              start_date: new Date(dto.recurring_schedule.start_date),
+                              end_date: new Date(dto.recurring_schedule.end_date),
+                          },
+                      }
+                    : undefined,
             },
             include: {
                 images: true,
@@ -50,6 +62,10 @@ export class ListingsService {
             },
         });
         await this.checkAlertsForListing(listing.id);
+
+        if (listing.is_recurring && listing.recurring_schedules.length > 0) {
+            await this.cronRelistService.registerCronJob(listing.recurring_schedules[0].id);
+        }
         return listing;
     }
 
@@ -67,14 +83,12 @@ export class ListingsService {
                 is_active: true,
                 material_type: listing.material_type,
                 condition: listing.condition,
-                listing_category: listing.listing_category,
+                category: listing.listing_category,
                 unit: listing.unit,
-                isReusable: listing.isReusable,
-                delivery_available: listing.delivery_available,
-                price_per_unit: {
+                max_price_per_unit: {
                     lte: listing.price_per_unit,
                 },
-                quantity: {
+                min_quantity: {
                     lte: listing.quantity,
                 },
             },
@@ -112,7 +126,9 @@ export class ListingsService {
             ...(query.listing_category && { listing_category: query.listing_category }),
             ...(query.unit && { unit: query.unit }),
             ...(query.isReusable !== undefined && { isReusable: query.isReusable }),
-            ...(query.delivery_available !== undefined && { delivery_available: query.delivery_available }),
+            ...(query.delivery_available !== undefined && {
+                delivery_available: query.delivery_available,
+            }),
             ...((query.min_price !== undefined || query.max_price !== undefined) && {
                 price_per_unit: {
                     ...(query.min_price !== undefined && { gte: query.min_price }),
@@ -122,11 +138,19 @@ export class ListingsService {
             ...(query.min_quantity !== undefined && { quantity: { gte: query.min_quantity } }),
         };
 
-        const orderBy: any = query.sort_by && query.sort_by !== 'distance'
-            ? { [query.sort_by === 'price' ? 'price_per_unit' : query.sort_by]: query.sort_order ?? 'desc' }
-            : { created_at: 'desc' };
+        const orderBy: any =
+            query.sort_by && query.sort_by !== 'distance'
+                ? {
+                      [query.sort_by === 'price' ? 'price_per_unit' : query.sort_by]:
+                          query.sort_order ?? 'desc',
+                  }
+                : { created_at: 'desc' };
 
-        const needsDistanceProcessing = !!(query.lat && query.lng && (query.max_distance_km || query.sort_by === 'distance'));
+        const needsDistanceProcessing = !!(
+            query.lat &&
+            query.lng &&
+            (query.max_distance_km || query.sort_by === 'distance')
+        );
 
         if (needsDistanceProcessing) {
             const slim = await this.prisma.listing.findMany({
@@ -142,7 +166,7 @@ export class ListingsService {
                 },
             });
 
-            let withDistance = slim.map(l => ({
+            let withDistance = slim.map((l) => ({
                 id: l.id,
                 distance_km: calculateDistance(
                     query.lat!,
@@ -153,7 +177,7 @@ export class ListingsService {
             }));
 
             if (query.max_distance_km) {
-                withDistance = withDistance.filter(l => l.distance_km <= query.max_distance_km!);
+                withDistance = withDistance.filter((l) => l.distance_km <= query.max_distance_km!);
             }
 
             if (query.sort_by === 'distance') {
@@ -165,12 +189,19 @@ export class ListingsService {
             const pageIds = withDistance.slice(skip, skip + limit);
 
             if (pageIds.length === 0) {
-                return { data: [], page, total, total_pages, next: null, prev: page > 1 ? page - 1 : null };
+                return {
+                    data: [],
+                    page,
+                    total,
+                    total_pages,
+                    next: null,
+                    prev: page > 1 ? page - 1 : null,
+                };
             }
 
-            const distanceMap = new Map(pageIds.map(l => [l.id, l.distance_km]));
+            const distanceMap = new Map(pageIds.map((l) => [l.id, l.distance_km]));
             const listings = await this.prisma.listing.findMany({
-                where: { id: { in: pageIds.map(l => l.id) } },
+                where: { id: { in: pageIds.map((l) => l.id) } },
                 include: {
                     images: { where: { is_primary: true }, take: 1 },
                     location: true,
@@ -179,10 +210,10 @@ export class ListingsService {
             });
 
             const sorted = pageIds
-                .map(({ id }) => listings.find(l => l.id === id)!)
+                .map(({ id }) => listings.find((l) => l.id === id)!)
                 .filter(Boolean);
 
-            const data = sorted.map(listing => ({
+            const data = sorted.map((listing) => ({
                 id: listing.id,
                 title: listing.title,
                 city: listing.location.city,
@@ -221,7 +252,7 @@ export class ListingsService {
             }),
         ]);
 
-        const data = listings.map(listing => ({
+        const data = listings.map((listing) => ({
             id: listing.id,
             title: listing.title,
             city: listing.location.city,
@@ -232,14 +263,15 @@ export class ListingsService {
             unit: listing.unit,
             price_per_unit: Number(listing.price_per_unit),
             currency: listing.currency,
-            distance_km: query.lat && query.lng
-                ? calculateDistance(
-                    query.lat,
-                    query.lng,
-                    Number(listing.location.latitude),
-                    Number(listing.location.longitude),
-                )
-                : null,
+            distance_km:
+                query.lat && query.lng
+                    ? calculateDistance(
+                          query.lat,
+                          query.lng,
+                          Number(listing.location.latitude),
+                          Number(listing.location.longitude),
+                      )
+                    : null,
         }));
 
         const total_pages = Math.ceil(total / limit);
@@ -274,7 +306,12 @@ export class ListingsService {
         ]);
     }
 
-    async getListingById(id: string, requestingCompanyId?: string, lat?: number, lng?: number): Promise<GetListingDto> {
+    async getListingById(
+        id: string,
+        requestingCompanyId?: string,
+        lat?: number,
+        lng?: number,
+    ): Promise<GetListingDto> {
         const listing = await this.prisma.listing.findUniqueOrThrow({
             where: { id },
             include: {
@@ -318,7 +355,9 @@ export class ListingsService {
                 id: listing.company.id,
                 name: listing.company.name,
                 logo_url: listing.company.logo_url ?? null,
-                trust_score: listing.company.trust_score ? Number(listing.company.trust_score) : null,
+                trust_score: listing.company.trust_score
+                    ? Number(listing.company.trust_score)
+                    : null,
             },
             location: {
                 city: listing.location.city,
@@ -329,20 +368,30 @@ export class ListingsService {
                 latitude: Number(listing.location.latitude),
                 longitude: Number(listing.location.longitude),
             },
-            images: listing.images.map(img => ({
+            images: listing.images.map((img) => ({
                 id: img.id,
                 image_url: img.image_url,
                 is_primary: img.is_primary,
                 sort_order: img.sort_order,
             })),
-            distance_km: lat && lng
-                ? calculateDistance(lat, lng, Number(listing.location.latitude), Number(listing.location.longitude))
-                : null,
+            distance_km:
+                lat && lng
+                    ? calculateDistance(
+                          lat,
+                          lng,
+                          Number(listing.location.latitude),
+                          Number(listing.location.longitude),
+                      )
+                    : null,
             is_saved: Array.isArray(listing.saved_by) ? listing.saved_by.length > 0 : false,
         };
     }
 
-    async updateListing(id: string, companyId: string, dto: UpdateListingDto): Promise<GetListingDto> {
+    async updateListing(
+        id: string,
+        companyId: string,
+        dto: UpdateListingDto,
+    ): Promise<GetListingDto> {
         const existing = await this.prisma.listing.findUniqueOrThrow({
             where: { id },
             select: { company_id: true },
@@ -352,13 +401,24 @@ export class ListingsService {
             throw new ForbiddenException('You do not own this listing');
         }
 
-        await this.prisma.listing.update({
+        const updatedListing = await this.prisma.listing.update({
             where: { id },
             data: {
                 ...dto,
                 ...(dto.available_until && { available_until: new Date(dto.available_until) }),
             },
         });
+
+        const schedule = await this.prisma.recurringSchedule.findFirst({
+            where: { listing_id: id },
+        });
+
+        if (updatedListing.is_recurring && schedule) {
+            await this.cronRelistService.registerCronJob(schedule.id);
+        } else if (!updatedListing.is_recurring && schedule) {
+            await this.cronRelistService.removeSchedule(schedule.id);
+        }
+
         return this.getListingById(id, companyId);
     }
 }

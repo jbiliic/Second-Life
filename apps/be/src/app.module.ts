@@ -9,6 +9,8 @@ import { ContentTypeMiddleware } from './common/middleware/content-type.middlewa
 import { AuthModule } from './modules/auth/auth.module';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { ListingsModule } from './modules/listings/listings.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronRelistModule } from './modules/cronRelist/cronRelist.module';
 
 @Module({
     imports: [
@@ -16,15 +18,19 @@ import { ListingsModule } from './modules/listings/listings.module';
             envFilePath: '../../.env',
             isGlobal: true,
         }),
-        ThrottlerModule.forRoot([{
-            name: 'default',
-            ttl: 60000,
-            limit: 100,
-        }]),
+        ThrottlerModule.forRoot([
+            {
+                name: 'default',
+                ttl: 60000,
+                limit: 100,
+            },
+        ]),
+        ScheduleModule.forRoot(),
         PrismaModule,
         AuthModule,
         CompaniesModule,
         ListingsModule,
+        CronRelistModule,
     ],
     controllers: [AppController],
     providers: [
