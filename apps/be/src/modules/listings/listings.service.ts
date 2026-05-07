@@ -12,7 +12,7 @@ export class ListingsService {
     constructor(private readonly prisma: PrismaService) { }
 
     async createListing(companyId: string, dto: CreateListingDto) {
-        return await this.prisma.listing.create({
+        const listing = await this.prisma.listing.create({
             data: {
                 company_id: companyId,
                 location_id: dto.location_id,
@@ -49,7 +49,54 @@ export class ListingsService {
                 recurring_schedules: true,
             },
         });
+        await this.checkAlertsForListing(listing.id);
+        return listing;
     }
+
+    async checkAlertsForListing(listingId: string) {
+        const listing = await this.prisma.listing.findUniqueOrThrow({
+            where: { id: listingId },
+            include: {
+                location: true,
+                company: true,
+            },
+        });
+
+        const alerts = await this.prisma.alert.findMany({
+            where: {
+                is_active: true,
+                material_type: listing.material_type,
+                condition: listing.condition,
+                listing_category: listing.listing_category,
+                unit: listing.unit,
+                isReusable: listing.isReusable,
+                delivery_available: listing.delivery_available,
+                price_per_unit: {
+                    lte: listing.price_per_unit,
+                },
+                quantity: {
+                    lte: listing.quantity,
+                },
+            },
+        });
+        for (const alert of alerts) {
+            const distance = calculateDistance(
+                Number(listing.location.latitude),
+                Number(listing.location.longitude),
+                Number(alert.latitude),
+                Number(alert.longitude),
+            );
+            if (alert.max_distance_km === null || distance <= alert.max_distance_km) {
+                await this.prisma.notification.create({
+                    data: {
+                        company_id: alert.company_id,
+                        listing_id: listing.id,
+                    },
+                });
+            }
+        }
+    }
+
     /*
     TODO: ucinit ovu funkciju manje groznom
     */

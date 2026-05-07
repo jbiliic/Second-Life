@@ -166,13 +166,15 @@ model Rating {
 model Alert {
   id                 String            @id @default(uuid()) @db.Uuid
   company_id         String            @db.Uuid
-  category           ListingCategory
-  material_type      MaterialType
-  condition          MaterialCondition
-  max_distance_km    Int
-  max_price_per_unit Decimal
-  min_quantity       Decimal
-  unit               UnitType
+  category           ListingCategory?
+  material_type      MaterialType?
+  condition          MaterialCondition?
+  max_distance_km    Int?
+  max_price_per_unit Decimal?
+  min_quantity       Decimal?
+  unit               UnitType?
+  latitude      Decimal
+  longitude     Decimal
   is_active          Boolean            @default(true)
   created_at         DateTime          @default(now())
   updated_at         DateTime          @updatedAt
