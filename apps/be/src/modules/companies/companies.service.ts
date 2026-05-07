@@ -2,8 +2,8 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { UpdateMyProfileDto } from './dto/UpdateMyProfile.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
-import { GetMyProfileDto } from './dto/GetMyProfile.dto';
 import { LocationDto } from './dto/location.dto';
+import { PaymentMethodDto } from './dto/payment.dto';
 
 @Injectable()
 export class CompaniesService {
@@ -59,5 +59,31 @@ export class CompaniesService {
                 },
             },
         });
+    }
+
+    async createAndAddPayment(companyId: string, paymentData: Omit<PaymentMethodDto, 'id'>) {
+        const paymentMethod = await this.prisma.companyPaymentMethod.create({
+            data: {
+                ...paymentData,
+                company: { connect: { id: companyId } },
+            },
+        });
+        return paymentMethod;
+    }
+
+    async getPaymentMethods(companyId: string): Promise<PaymentMethodDto[]> {
+        const methods = (await this.prisma.companyPaymentMethod.findMany({
+            where: {
+                company_id: companyId,
+            },
+        })) as PaymentMethodDto[];
+
+        return methods.map((m) => ({
+            id: m.id,
+            type: m.type,
+            is_default: m.is_default,
+            iban: m.iban,
+            bank_name: m.bank_name,
+        }));
     }
 }
