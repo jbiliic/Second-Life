@@ -1,5 +1,5 @@
-import logo from "assets/icons/secondlife-logo.svg";
-import styles from "components/Identity/Identity.module.css";
+import logo from '@/assets/icons/secondlife-logo.svg';
+import styles from '@/components/Identity/Identity.module.css';
 
 const Identity = () => {
     return (

@@ -1,14 +1,9 @@
-import { Route, Routes } from "react-router-dom";
 // @ts-ignore
-import "./App.css";
-import Welcome from "./pages/Welcome/Welcome";
+import { Router } from './Router';
+import './App.css';
 
 function App() {
-    return (
-        <Routes>
-            <Route path="/" element={<Welcome />} />
-        </Routes>
-    );
+    return <Router />;
 }
 
 export default App;
