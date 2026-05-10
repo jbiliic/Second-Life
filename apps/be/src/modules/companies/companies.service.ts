@@ -2,12 +2,12 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { UpdateMyProfileDto } from './dto/UpdateMyProfile.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
-import { GetMyProfileDto } from './dto/GetMyProfile.dto';
+import { LocationDto } from './dto/location.dto';
+import { PaymentMethodDto } from './dto/payment.dto';
 
 @Injectable()
 export class CompaniesService {
-
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(private readonly prisma: PrismaService) {}
 
     async getProfile(id: string) {
         return await this.prisma.company.findUnique({
@@ -24,7 +24,7 @@ export class CompaniesService {
                 trust_score: true,
                 carbon_credit: true,
             },
-        });;
+        });
     }
 
     async updateProfile(id: string, data: UpdateMyProfileDto) {
@@ -39,4 +39,61 @@ export class CompaniesService {
         }
     }
 
+    async createAndAddLocation(companyId: string, locationData: Omit<LocationDto, 'id'>) {
+        const location = await this.prisma.location.create({
+            data: {
+                ...locationData,
+                companies: { connect: { id: companyId } },
+            },
+        });
+        return location;
+    }
+
+    async getLocations(companyId: string) {
+        const locations = await this.prisma.location.findMany({
+            include: {
+                companies: {
+                    where: {
+                        id: companyId,
+                    },
+                },
+            },
+        });
+        return locations.map((loc) => ({
+            id: loc.id,
+            street: loc.street,
+            street_number: loc.street_number,
+            city: loc.city,
+            zip: loc.zip,
+            country: loc.country,
+            latitude: Number(loc.latitude),
+            longitude: Number(loc.longitude),
+        })) as LocationDto[];
+    }
+
+    async createAndAddPayment(companyId: string, paymentData: Omit<PaymentMethodDto, 'id'>) {
+        const paymentMethod = await this.prisma.companyPaymentMethod.create({
+            data: {
+                ...paymentData,
+                company: { connect: { id: companyId } },
+            },
+        });
+        return paymentMethod;
+    }
+
+    async getPaymentMethods(companyId: string): Promise<PaymentMethodDto[]> {
+        const methods = (await this.prisma.companyPaymentMethod.findMany({
+            where: {
+                company_id: companyId,
+            },
+        })) as PaymentMethodDto[];
+
+        return methods.map((m) => ({
+            id: m.id,
+            type: m.type,
+            is_default: m.is_default,
+            iban: m.iban,
+            bank_name: m.bank_name,
+        }));
+    }
 }

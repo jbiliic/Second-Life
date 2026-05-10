@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "PickupSlot" ALTER COLUMN "start_time" SET DATA TYPE VARCHAR,
+ALTER COLUMN "end_time" SET DATA TYPE VARCHAR;

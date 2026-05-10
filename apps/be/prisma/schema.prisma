@@ -28,7 +28,7 @@ model Company {
   updated_at    DateTime @updatedAt
 
   payment_methods  CompanyPaymentMethod[]
-  locations        LocationCompany[]
+  locations        Location[]
   listings         Listing[]
   orders_as_buyer  Order[]                @relation("BuyerCompany")
   orders_as_seller Order[]                @relation("SellerCompany")
@@ -63,21 +63,10 @@ model Location {
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
-  companies             LocationCompany[]
+  companies             Company[]
   listings              Listing[]
   orders_as_pickup      Order[]           @relation("PickupLocation")
   orders_as_destination Order[]           @relation("Destination")
-}
-
-model LocationCompany {
-  id          String   @id @default(uuid()) @db.Uuid
-  company_id  String   @db.Uuid
-  location_id String   @db.Uuid
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  company  Company  @relation(fields: [company_id], references: [id])
-  location Location @relation(fields: [location_id], references: [id])
 }
 
 model Listing {
@@ -95,24 +84,21 @@ model Listing {
   min_order             Decimal
   price_per_unit        Decimal
   currency              String            @db.VarChar
-  delivery_available    Boolean         @default(false)
+  delivery_available    Boolean           @default(false)
   available_until       DateTime          @db.Date
-  is_recurring          Boolean             @default(false)
-  recurring_schedule_id String            @db.Uuid
-  is_active             Boolean            @default(true)
+  is_recurring          Boolean           @default(false)
+  is_active             Boolean           @default(true)
   created_at            DateTime          @default(now())
   updated_at            DateTime          @updatedAt
 
-  company            Company           @relation(fields: [company_id], references: [id])
-  location           Location          @relation(fields: [location_id], references: [id])
-  recurring_schedule RecurringSchedule @relation(fields: [recurring_schedule_id], references: [id])
-
+  company             Company             @relation(fields: [company_id], references: [id])
+  location            Location            @relation(fields: [location_id], references: [id])
   images              ListingImage[]
   orders              Order[]
   pickup_slots        PickupSlot[]
   saved_by            SavedListing[]
   notifications       Notification[]
-  recurring_schedules RecurringSchedule[] @relation("RecurringScheduleListing")
+  recurring_schedules RecurringSchedule[]
 }
 
 model ListingImage {
@@ -180,13 +166,15 @@ model Rating {
 model Alert {
   id                 String            @id @default(uuid()) @db.Uuid
   company_id         String            @db.Uuid
-  category           ListingCategory
-  material_type      MaterialType
-  condition          MaterialCondition
-  max_distance_km    Int
-  max_price_per_unit Decimal
-  min_quantity       Decimal
-  unit               UnitType
+  category           ListingCategory?
+  material_type      MaterialType?
+  condition          MaterialCondition?
+  max_distance_km    Int?
+  max_price_per_unit Decimal?
+  min_quantity       Decimal?
+  unit               UnitType?
+  latitude      Decimal
+  longitude     Decimal
   is_active          Boolean            @default(true)
   created_at         DateTime          @default(now())
   updated_at         DateTime          @updatedAt
@@ -198,8 +186,8 @@ model PickupSlot {
   id           String   @id @default(uuid()) @db.Uuid
   listing_id   String   @db.Uuid
   date         DateTime @db.Date
-  start_time   DateTime @db.Time
-  end_time     DateTime @db.Time
+  start_time   String   @db.VarChar  
+  end_time     String   @db.VarChar
   is_available Boolean  @default(true)
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
@@ -218,8 +206,7 @@ model RecurringSchedule {
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
-  listing  Listing   @relation("RecurringScheduleListing", fields: [listing_id], references: [id])
-  listings Listing[]
+  listing Listing @relation(fields: [listing_id], references: [id])
 }
 
 model SavedListing {
