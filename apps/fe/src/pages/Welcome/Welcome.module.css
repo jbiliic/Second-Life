@@ -1,0 +1,31 @@
+.container,
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    gap: 6rem;
+
+    height: 100%;
+}
+
+.content {
+    gap: 1rem;
+}
+
+.loginText {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+
+    color: #606670;
+}
+
+.loginLink {
+    text-decoration: none;
+    color: #000000;
+}

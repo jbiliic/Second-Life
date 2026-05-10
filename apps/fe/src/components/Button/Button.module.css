@@ -1,0 +1,18 @@
+.button {
+    background-color: #2f3437;
+    border: solid 2px #2f3437;
+
+    color: #ffffff;
+
+    width: 246px;
+    height: 48px;
+}
+
+.button:hover {
+    opacity: 80%;
+}
+
+.button:active,
+.button:focus {
+    opacity: 100%;
+}
