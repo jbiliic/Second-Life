@@ -11,9 +11,19 @@ import { CompaniesModule } from './modules/companies/companies.module';
 import { ListingsModule } from './modules/listings/listings.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronRelistModule } from './modules/cronRelist/cronRelist.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
 
 @Module({
     imports: [
+        CacheModule.registerAsync({
+            isGlobal: true,
+            useFactory: async () => ({
+                store: redisStore,
+                url: process.env.REDIS_URL,
+                ttl: 1000 * 60 * 5, // 5 minutes default
+            }),
+        }),
         ConfigModule.forRoot({
             envFilePath: '../../.env',
             isGlobal: true,

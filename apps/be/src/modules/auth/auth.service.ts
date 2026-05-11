@@ -1,4 +1,12 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+    BadRequestException,
+    Inject,
+    Injectable,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterCompanyDto } from './dto/registerDto.dto';
@@ -8,27 +16,29 @@ import { AuthenticatedUser } from '../../common/auth/interfaces/authenticatedUse
 import { MailService } from '../../common/mail/mail.service';
 import { randomBytes } from 'crypto';
 
-interface TokenPayload {
+interface VerifyPayload {
     companyId: string;
-    expires: Date;
 }
+
+interface ResetPayload {
+    companyId: string;
+    newPassword: string;
+}
+
 @Injectable()
 export class AuthService {
-    constructor(private readonly prisma: PrismaService,
+    constructor(
+        private readonly prisma: PrismaService,
         private readonly jwtService: JwtService,
-        private readonly mailService: MailService
-    ) { }
-    /*
-    TODO: implementirat redis
-    */
-    private verificationTokens = new Map<string, TokenPayload>();
-    private resetTokens = new Map<string, { companyId: string; newPassword: string; expires: Date }>();
+        private readonly mailService: MailService,
+        @Inject(CACHE_MANAGER) private readonly cache: Cache,
+    ) {}
 
     async register(registerDto: RegisterCompanyDto) {
-        const existingCompany = await this.prisma.company.findUnique({ where: { email: registerDto.email } });
-        if (existingCompany) {
-            throw new Error('Email already in use');
-        }
+        const existingCompany = await this.prisma.company.findUnique({
+            where: { email: registerDto.email },
+        });
+        if (existingCompany) throw new Error('Email already in use');
 
         const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
@@ -46,51 +56,47 @@ export class AuthService {
         });
 
         const verificationToken = randomBytes(32).toString('hex');
-        const expires = new Date(Date.now() + 1000 * 60 * 5); // 5 minutes
-        this.verificationTokens.set(verificationToken, { companyId: company.id, expires });
+        await this.cache.set(
+            `verify:${verificationToken}`,
+            { companyId: company.id } as VerifyPayload,
+            1000 * 60 * 5,
+        );
         await this.mailService.sendVerificationEmail(company.email, verificationToken);
 
-        const payload = { id: company.id, isAdmin: false, isVerified: company.is_verified } as AuthenticatedUser;
-        const token = this.jwtService.sign(payload);
-        return { access_token: token };
+        const payload = {
+            id: company.id,
+            isAdmin: false,
+            isVerified: company.is_verified,
+        } as AuthenticatedUser;
+        return { access_token: this.jwtService.sign(payload) };
     }
 
     async verifyEmail(token: string) {
-        const payload = this.verificationTokens.get(token);
-
-        if (!payload)
-            throw new NotFoundException('Invalid verification token');
-
-        if (payload.expires < new Date()) {
-            this.verificationTokens.delete(token);
-            throw new BadRequestException('Verification token has expired');
-        }
+        const payload = await this.cache.get<VerifyPayload>(`verify:${token}`);
+        if (!payload) throw new NotFoundException('Invalid or expired verification token');
 
         await this.prisma.company.update({
             where: { id: payload.companyId },
             data: { is_verified: true },
         });
 
-        this.verificationTokens.delete(token);
+        await this.cache.del(`verify:${token}`);
         return { message: 'Email verified successfully' };
     }
 
     async login(loginDto: LoginDto) {
         const company = await this.prisma.company.findUnique({ where: { email: loginDto.email } });
-        if (!company) {
-            throw new UnauthorizedException('Invalid credentials');
-        }
+        if (!company) throw new UnauthorizedException('Invalid credentials');
+
         const isPasswordMatching = await bcrypt.compare(loginDto.password, company.password);
+        if (!isPasswordMatching) throw new UnauthorizedException('Invalid credentials');
 
-        if (!isPasswordMatching) {
-            throw new UnauthorizedException('Invalid credentials');
-        }
-
-        const payload = { id: company.id, isAdmin: false, isVerified: company.is_verified } as AuthenticatedUser;
-
-        const token = this.jwtService.sign(payload);
-
-        return { access_token: token };
+        const payload = {
+            id: company.id,
+            isAdmin: false,
+            isVerified: company.is_verified,
+        } as AuthenticatedUser;
+        return { access_token: this.jwtService.sign(payload) };
     }
 
     async resetPassword(email: string) {
@@ -99,28 +105,20 @@ export class AuthService {
 
         const newPassword = randomBytes(8).toString('hex');
         const token = randomBytes(32).toString('hex');
-        const expires = new Date(Date.now() + 1000 * 60 * 5); // 5 minutes
 
-        this.resetTokens.set(token, {
-            companyId: company.id,
-            newPassword,
-            expires,
-        });
-
+        await this.cache.set(
+            `reset:${token}`,
+            { companyId: company.id, newPassword } as ResetPayload,
+            1000 * 60 * 5,
+        );
         await this.mailService.sendPasswordResetEmail(company.email, newPassword, token);
 
         return { message: 'Password reset email sent' };
     }
 
     async confirmResetPassword(token: string) {
-        const payload = this.resetTokens.get(token);
-
-        if (!payload) throw new NotFoundException('Invalid reset token');
-
-        if (payload.expires < new Date()) {
-            this.resetTokens.delete(token);
-            throw new BadRequestException('Reset token has expired');
-        }
+        const payload = await this.cache.get<ResetPayload>(`reset:${token}`);
+        if (!payload) throw new NotFoundException('Invalid or expired reset token');
 
         const hashed = await bcrypt.hash(payload.newPassword, 10);
 
@@ -129,8 +127,7 @@ export class AuthService {
             data: { password: hashed },
         });
 
-        this.resetTokens.delete(token);
-
+        await this.cache.del(`reset:${token}`);
         return { message: 'Password reset successful' };
     }
 }
