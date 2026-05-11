@@ -3,6 +3,8 @@ import { useState } from 'react';
 import Button from '@/components/Button/Button';
 import client from '@/api/client';
 import styles from './LoginPage.module.css';
+import { useNavigate } from 'react-router';
+import { routes } from '@/constants/routes';
 
 interface LoginResponse {
     access_token: string;
@@ -13,6 +15,7 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(false);
+    const navigate = useNavigate();
 
     const handleLogin = async () => {
         setError(false);
@@ -84,7 +87,11 @@ export default function Login() {
 
                     {error && <p className={styles.errorText}>Prijava neuspješna.</p>}
 
-                    <button type="button" className={styles.forgotPassword}>
+                    <button
+                        type="button"
+                        className={styles.forgotPassword}
+                        onClick={() => navigate(routes.FORGOT_PASSWORD)}
+                    >
                         Zaboravili ste lozinku?
                     </button>
                 </form>
@@ -94,7 +101,11 @@ export default function Login() {
                 <Button type="submit" text="Prijavi se" onClick={handleLogin} />
                 <p className={styles.registerText}>
                     Nemaš račun?{' '}
-                    <button type="button" className={styles.registerLink}>
+                    <button
+                        type="button"
+                        className={styles.registerLink}
+                        onClick={() => navigate(routes.REGISTER)}
+                    >
                         Registriraj se
                     </button>
                 </p>
