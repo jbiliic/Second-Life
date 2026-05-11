@@ -10,6 +10,7 @@ import client from '@/api/client';
 import LocationPicker from '@/components/LocationPicker/LocationPicker';
 import type { GeoAddress } from '@/util/getGeoLocation';
 import FileUpload from '@/components/FileUpload/FileUpload';
+import { uploadToCloudinary } from '@/util/savePhoto.util';
 
 interface RegistrationResponse {
     access_token: string;
@@ -70,7 +71,16 @@ export default function RegisterPage() {
     };
 
     const handleSubmit = async () => {
-        // TODO: implement register
+        navigate(routes.HOME);
+
+        if (logoFile) {
+            const imgURL = await uploadToCloudinary(logoFile);
+            await client.patch('/companies/me/logo', { logo_url: imgURL });
+        }
+
+        if (location) {
+            await client.post('/companies/locations', location);
+        }
     };
 
     return (

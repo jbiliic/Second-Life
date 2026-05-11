@@ -93,4 +93,12 @@ export class CompaniesService {
             bank_name: m.bank_name,
         }));
     }
+
+    async updateLogo(companyId: string, logo_url: string) {
+        return await this.prisma.company.update({
+            where: { id: companyId },
+            data: { logo_url },
+            select: { logo_url: true },
+        });
+    }
 }
