@@ -38,7 +38,7 @@ export class AuthService {
         const existingCompany = await this.prisma.company.findUnique({
             where: { email: registerDto.email },
         });
-        if (existingCompany) throw new Error('Email already in use');
+        if (existingCompany) throw new BadRequestException('Email already in use');
 
         const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
@@ -46,12 +46,22 @@ export class AuthService {
             data: {
                 name: registerDto.name,
                 oib: registerDto.oib,
-                mbs: registerDto.mbs,
                 logo_url: registerDto.logo_url,
                 password: hashedPassword,
-                phone: registerDto.phone,
                 email: registerDto.email,
-                website: registerDto.website,
+                ...(registerDto.location && {
+                    locations: {
+                        create: {
+                            country: registerDto.location.country,
+                            city: registerDto.location.city,
+                            zip: registerDto.location.zip,
+                            street: registerDto.location.street,
+                            street_number: registerDto.location.street_number,
+                            latitude: registerDto.location.latitude,
+                            longitude: registerDto.location.longitude,
+                        },
+                    },
+                }),
             },
         });
 
@@ -68,6 +78,7 @@ export class AuthService {
             isAdmin: false,
             isVerified: company.is_verified,
         } as AuthenticatedUser;
+
         return { access_token: this.jwtService.sign(payload) };
     }
 

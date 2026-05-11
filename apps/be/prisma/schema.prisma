@@ -15,12 +15,9 @@ model Company {
   id            String   @id @default(uuid()) @db.Uuid
   name          String   @db.VarChar
   oib           String   @db.VarChar(11) @unique
-  mbs           String   @db.VarChar(20) @unique
   logo_url      String?   @db.VarChar
   password      String   @db.VarChar
-  phone         String   @db.VarChar @unique
   email         String   @db.VarChar @unique
-  website       String?   @db.VarChar
   is_verified   Boolean  @default(false)
   trust_score   Decimal?  
   carbon_credit Decimal?

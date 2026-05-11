@@ -7,11 +7,13 @@ import {
     MinLength,
     Matches,
     IsNotEmpty,
+    IsLongitude,
+    IsLatitude,
+    IsUUID,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class RegisterCompanyDto {
-
     @ApiProperty({ example: 'Acme d.o.o.' })
     @IsString()
     @IsNotEmpty()
@@ -23,12 +25,6 @@ export class RegisterCompanyDto {
     @Length(11, 11, { message: 'OIB must be exactly 11 characters' })
     oib: string;
 
-    @ApiPropertyOptional({ example: '080123456', description: 'MBS – up to 20 chars' })
-    @IsNotEmpty()
-    @IsString()
-    @Length(1, 20)
-    mbs: string;
-
     @ApiPropertyOptional({ example: 'https://cdn.example.com/logo.png' })
     @IsOptional()
     @IsUrl()
@@ -39,16 +35,51 @@ export class RegisterCompanyDto {
     @MinLength(8)
     password: string;
 
-    @ApiProperty({ example: '+385911234567' })
-    @IsString()
-    phone: string;
-
     @ApiProperty({ example: 'info@acme.hr' })
     @IsEmail()
     email: string;
 
-    @ApiPropertyOptional({ example: 'https://acme.hr' })
+    @ApiPropertyOptional()
     @IsOptional()
-    @IsUrl()
-    website?: string;
+    location?: LocationDto;
+}
+
+export class LocationDto {
+    @ApiPropertyOptional({ example: 'uuid-here' })
+    @IsOptional()
+    @IsUUID()
+    id?: string;
+
+    @ApiProperty({ example: 'Croatia' })
+    @IsNotEmpty()
+    @IsString()
+    country: string;
+
+    @ApiProperty({ example: 'Zagreb' })
+    @IsNotEmpty()
+    @IsString()
+    city: string;
+
+    @ApiProperty({ example: '10000' })
+    @IsNotEmpty()
+    @IsString()
+    zip: string;
+
+    @ApiProperty({ example: 'Ilica' })
+    @IsNotEmpty()
+    @IsString()
+    street: string;
+
+    @ApiProperty({ example: '42' })
+    @IsNotEmpty()
+    @IsString()
+    street_number: string;
+
+    @ApiProperty({ example: 45.815 })
+    @IsLatitude()
+    latitude: number;
+
+    @ApiProperty({ example: 15.9819 })
+    @IsLongitude()
+    longitude: number;
 }
