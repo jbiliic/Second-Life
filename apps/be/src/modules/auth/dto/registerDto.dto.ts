@@ -1,31 +1,29 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-    IsString,
     IsEmail,
+    IsNotEmpty,
     IsOptional,
+    IsString,
     IsUrl,
     Length,
     MinLength,
-    Matches,
-    IsNotEmpty,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class RegisterCompanyDto {
-
     @ApiProperty({ example: 'Acme d.o.o.' })
     @IsString()
     @IsNotEmpty()
     name: string;
 
-    @ApiPropertyOptional({ example: '12345678901', description: 'Croatian OIB (11 digits)' })
-    @IsNotEmpty()
+    @ApiProperty({ example: '12345678901', description: 'Croatian OIB (11 digits)' })
     @IsString()
-    @Length(11, 11, { message: 'OIB must be exactly 11 characters' })
+    @IsNotEmpty()
+    @Length(11, 11)
     oib: string;
 
-    @ApiPropertyOptional({ example: '080123456', description: 'MBS – up to 20 chars' })
-    @IsNotEmpty()
+    @ApiProperty({ example: '080123456', description: 'MBS - up to 20 chars' })
     @IsString()
+    @IsNotEmpty()
     @Length(1, 20)
     mbs: string;
 

@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MailService {
-    constructor(private readonly mailer: MailerService) { }
+    constructor(private readonly mailer: MailerService) {}
 
     async sendVerificationEmail(to: string, token: string) {
         const url = `${process.env.APP_URL}/auth/verify?token=${token}`;

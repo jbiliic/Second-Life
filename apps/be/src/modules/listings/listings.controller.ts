@@ -1,29 +1,36 @@
 import {
-    Controller, Get, Post, Put, Delete,
-    Body, Param, Query, Req,
-    UseGuards, HttpCode, HttpStatus,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    Post,
+    Put,
+    Query,
+    Req,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
-import { ListingsService } from './listings.service';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserGuard } from '../../common/auth/guards/user.guard';
 import { AuthenticatedUser } from '../../common/auth/interfaces/authenticatedUser.interface';
-import { GetListingsQueryDto } from './dto/getListingQuery.dto';
 import { CreateListingDto } from './dto/createListing.dto';
-import { UpdateListingDto } from './dto/updateListing.dto';
+import { GetListingsQueryDto } from './dto/getListingQuery.dto';
 import { PaginatedListingsDto } from './dto/getListingsPaginated.dto';
 import { GetListingDto } from './dto/getSingleListing.dto';
+import { UpdateListingDto } from './dto/updateListing.dto';
+import { ListingsService } from './listings.service';
 
 @ApiTags('Listings')
 @Controller('listings')
 export class ListingsController {
-    constructor(private readonly listingsService: ListingsService) { }
+    constructor(private readonly listingsService: ListingsService) {}
 
     @Get()
     @ApiOperation({ summary: 'Get paginated listings with filters' })
     @ApiResponse({ status: 200, type: PaginatedListingsDto })
-    getListings(
-        @Query() query: GetListingsQueryDto,
-    ): Promise<PaginatedListingsDto> {
+    getListings(@Query() query: GetListingsQueryDto): Promise<PaginatedListingsDto> {
         return this.listingsService.getListingsPaginated(query);
     }
 
@@ -46,10 +53,7 @@ export class ListingsController {
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Create a new listing' })
     @ApiResponse({ status: 201, type: GetListingDto })
-    createListing(
-        @Req() req: { user: AuthenticatedUser },
-        @Body() dto: CreateListingDto,
-    ) {
+    createListing(@Req() req: { user: AuthenticatedUser }, @Body() dto: CreateListingDto) {
         return this.listingsService.createListing(req.user.id, dto);
     }
 
@@ -78,10 +82,7 @@ export class ListingsController {
     @ApiResponse({ status: 204, description: 'Listing deleted' })
     @ApiResponse({ status: 403, description: 'Forbidden — not the listing owner' })
     @ApiResponse({ status: 404, description: 'Listing not found' })
-    deleteListing(
-        @Param('id') id: string,
-        @Req() req: { user: AuthenticatedUser },
-    ): Promise<void> {
+    deleteListing(@Param('id') id: string, @Req() req: { user: AuthenticatedUser }): Promise<void> {
         return this.listingsService.deleteListing(id, req.user.id);
     }
 }
