@@ -1,0 +1,233 @@
+/* RegisterPage.module.css */
+.screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    padding-inline: var(--screen-padding);
+    background-color: #f8f6f1;
+    color-scheme: light;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding-top: var(--space-8);
+}
+
+.topRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title {
+    margin: 0;
+}
+
+.stepIndicator {
+    font-size: var(--body-m-size);
+    line-height: var(--body-m-line);
+    color: #606670;
+}
+
+.subtitle {
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
+    font-weight: 500;
+    color: #606670;
+    margin: 0;
+    margin-top: calc(-1 * var(--space-4));
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--input-gap);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.label {
+    font-size: var(--body-l-size);
+    line-height: var(--body-l-line);
+    color: #2f3437;
+}
+
+.inputWrapper {
+    position: relative;
+}
+
+.input {
+    width: 100%;
+    height: 56px;
+    padding-inline: var(--space-4);
+    border: 1.5px solid #dad4c7;
+    border-radius: var(--radius-input);
+    background: #fff;
+    font-size: var(--body-l-size);
+    color: #2f3437;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color var(--motion-normal) var(--motion-ease);
+}
+
+.inputWrapper .input {
+    padding-right: 48px;
+}
+
+.input:focus {
+    border-color: #204d3a;
+}
+
+.inputError {
+    border-color: #d64545;
+}
+
+.inputError:focus {
+    border-color: #d64545;
+}
+
+.errorText {
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
+    color: #d64545;
+}
+
+.eyeButton {
+    position: absolute;
+    right: var(--space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #606670;
+    display: flex;
+    align-items: center;
+    border-radius: 0;
+}
+
+.checkboxRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #204d3a;
+    cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 50%;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1.5px solid #dad4c7;
+    background: #fff;
+    position: relative;
+}
+
+.checkbox:checked {
+    background: #204d3a;
+    border-color: #204d3a;
+}
+
+.checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
+
+.checkboxLabel {
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
+    color: #606670;
+    cursor: pointer;
+}
+
+.uploadRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--space-4);
+    border: 1.5px solid #dad4c7;
+    border-radius: var(--radius-input);
+    background: #fff;
+    cursor: pointer;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.uploadInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.uploadTitle {
+    font-size: var(--body-m-size);
+    line-height: var(--body-m-line);
+    color: #2f3437;
+}
+
+.uploadSubtitle {
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
+    color: #606670;
+    font-weight: 500;
+}
+
+.uploadIcon {
+    color: #606670;
+    flex-shrink: 0;
+}
+
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+    padding-bottom: var(--space-8);
+}
+
+.loginText {
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
+    color: #606670;
+    text-align: center;
+}
+
+.loginLink {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: #2f3437;
+    cursor: pointer;
+    border-radius: 0;
+    text-decoration: underline;
+    text-align: center;
+}
+.nextButton {
+    width: 100%;
+    font-size: var(--body-l-size);
+    line-height: var(--body-l-line);
+}

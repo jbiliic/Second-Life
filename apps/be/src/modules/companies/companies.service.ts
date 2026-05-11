@@ -15,11 +15,8 @@ export class CompaniesService {
             select: {
                 name: true,
                 oib: true,
-                mbs: true,
                 logo_url: true,
-                phone: true,
                 email: true,
-                website: true,
                 is_verified: true,
                 trust_score: true,
                 carbon_credit: true,

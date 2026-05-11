@@ -13,37 +13,6 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class RegisterCompanyDto {
-    @ApiProperty({ example: 'Acme d.o.o.' })
-    @IsString()
-    @IsNotEmpty()
-    name: string;
-
-    @ApiPropertyOptional({ example: '12345678901', description: 'Croatian OIB (11 digits)' })
-    @IsNotEmpty()
-    @IsString()
-    @Length(11, 11, { message: 'OIB must be exactly 11 characters' })
-    oib: string;
-
-    @ApiPropertyOptional({ example: 'https://cdn.example.com/logo.png' })
-    @IsOptional()
-    @IsUrl()
-    logo_url?: string;
-
-    @ApiProperty({ example: 'SuperSecret123!' })
-    @IsString()
-    @MinLength(8)
-    password: string;
-
-    @ApiProperty({ example: 'info@acme.hr' })
-    @IsEmail()
-    email: string;
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    location?: LocationDto;
-}
-
 export class LocationDto {
     @ApiPropertyOptional({ example: 'uuid-here' })
     @IsOptional()
@@ -82,4 +51,34 @@ export class LocationDto {
     @ApiProperty({ example: 15.9819 })
     @IsLongitude()
     longitude: number;
+}
+export class RegisterCompanyDto {
+    @ApiProperty({ example: 'Acme d.o.o.' })
+    @IsString()
+    @IsNotEmpty()
+    name: string;
+
+    @ApiPropertyOptional({ example: '12345678901', description: 'Croatian OIB (11 digits)' })
+    @IsNotEmpty()
+    @IsString()
+    @Length(11, 11, { message: 'OIB must be exactly 11 characters' })
+    oib: string;
+
+    @ApiPropertyOptional({ example: 'https://cdn.example.com/logo.png' })
+    @IsOptional()
+    @IsUrl()
+    logo_url?: string;
+
+    @ApiProperty({ example: 'SuperSecret123!' })
+    @IsString()
+    @MinLength(8)
+    password: string;
+
+    @ApiProperty({ example: 'info@acme.hr' })
+    @IsEmail()
+    email: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    location?: LocationDto;
 }

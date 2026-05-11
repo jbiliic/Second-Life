@@ -3,6 +3,7 @@ import Welcome from '@/pages/Welcome/Welcome';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Login from './pages/LogInPage/LoginPage';
 import ForgotPasswordPage from './pages/ForgotPasswPage/ForgotPasswordPage';
+import RegisterPage from './pages/RegisterPage/RegisterPage';
 
 export const Router = () => {
     return (
@@ -11,7 +12,7 @@ export const Router = () => {
                 <Route path={routes.LANDING} element={<Welcome />} />
                 <Route path={routes.LOGIN} element={<Login />} />
                 <Route path={routes.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
-                {/* <Route path={routes.REGISTER} element={<RegisterPage />} /> */}
+                <Route path={routes.REGISTER} element={<RegisterPage />} />
             </Routes>
         </BrowserRouter>
     );
