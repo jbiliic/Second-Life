@@ -1,0 +1,30 @@
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: var(--bottom-nav-height);
+    padding-top: var(--bottom-nav-padding-top);
+    background: #fff;
+    border-radius: var(--radius-bottom-sheet) var(--radius-bottom-sheet) 0 0;
+    box-shadow: 0 -1px 0 #dad4c7;
+    flex-shrink: 0;
+}
+
+.item {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #606670;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+    flex: 1;
+    height: 100%;
+    transition: color var(--motion-fast) var(--motion-ease);
+}
+
+.active {
+    color: #2f3437;
+}
