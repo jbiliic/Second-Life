@@ -5,6 +5,12 @@ import Button from '@/components/Button/Button';
 import { routes } from '@/constants/routes';
 import styles from './RegisterPage.module.css';
 import uploadIcon from '@/assets/upload.png';
+import { type RegisterDTO } from './dto/register.dto';
+import client from '@/api/client';
+
+interface RegistrationResponse {
+    access_token: string;
+}
 
 export default function RegisterPage() {
     const navigate = useNavigate();
@@ -32,8 +38,28 @@ export default function RegisterPage() {
         return Object.keys(e).length === 0;
     };
 
-    const handleNext = () => {
-        if (validateStep1()) setStep(2);
+    const handleNext = async () => {
+        if (!validateStep1()) return;
+
+        const registerData: RegisterDTO = {
+            name,
+            oib,
+            email,
+            password,
+        };
+
+        const { data, error } = await client.post<RegistrationResponse>(
+            '/auth/register',
+            registerData,
+        );
+
+        if (error || !data) {
+            alert('Došlo je do pogreške prilikom registracije. Molimo pokušajte ponovno.');
+            return;
+        }
+
+        localStorage.setItem('access_token', data.access_token);
+        setStep(2);
     };
 
     const handleSubmit = async () => {
