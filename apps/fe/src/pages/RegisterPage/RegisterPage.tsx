@@ -7,6 +7,9 @@ import styles from './RegisterPage.module.css';
 import uploadIcon from '@/assets/upload.png';
 import { type RegisterDTO } from './dto/register.dto';
 import client from '@/api/client';
+import LocationPicker from '@/components/LocationPicker/LocationPicker';
+import type { GeoAddress } from '@/util/getGeoLocation';
+import FileUpload from '@/components/FileUpload/FileUpload';
 
 interface RegistrationResponse {
     access_token: string;
@@ -25,6 +28,10 @@ export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [location, setLocation] = useState<GeoAddress | null>(null);
+    const [showMap, setShowMap] = useState(false);
+    const [logoFile, setLogoFile] = useState<File | null>(null);
+    const [registryFile, setRegistryFile] = useState<File | null>(null);
 
     const validateStep1 = () => {
         const e: Record<string, string> = {};
@@ -215,47 +222,35 @@ export default function RegisterPage() {
                         <p className={styles.subtitle}>Potrebno za sigurnost transakcija</p>
 
                         <div className={styles.form}>
-                            <button type="button" className={styles.uploadRow}>
-                                <div className={styles.uploadInfo}>
-                                    <span className={styles.uploadTitle}>
-                                        Izvod iz sudskog registra
-                                    </span>
-                                    <span className={styles.uploadSubtitle}>
-                                        PDF, PG, PNG (max. 10MB)
-                                    </span>
-                                </div>
-                                <img
-                                    src={uploadIcon}
-                                    alt="upload"
-                                    className={styles.uploadIcon}
-                                    width={20}
-                                    height={20}
-                                />
-                            </button>
+                            <FileUpload
+                                title="Izvod iz sudskog registra"
+                                subtitle="PDF, PG, PNG (max. 10MB)"
+                                accept="application/pdf,image/png"
+                                icon={<img src={uploadIcon} alt="upload" width={20} height={20} />}
+                                onChange={(file) => setRegistryFile(file)}
+                            />
 
-                            <button type="button" className={styles.uploadRow}>
-                                <div className={styles.uploadInfo}>
-                                    <span className={styles.uploadTitle}>Logo firme</span>
-                                    <span className={styles.uploadSubtitle}>
-                                        JPG, PNG (min.200×200 px)
-                                    </span>
-                                </div>
-                                <img
-                                    src={uploadIcon}
-                                    alt="upload"
-                                    className={styles.uploadIcon}
-                                    width={20}
-                                    height={20}
-                                />
-                            </button>
+                            <FileUpload
+                                title="Logo firme"
+                                subtitle="JPG, PNG (min.200×200 px)"
+                                accept="image/jpeg,image/png"
+                                icon={<img src={uploadIcon} alt="upload" width={20} height={20} />}
+                                onChange={(file) => setLogoFile(file)}
+                            />
 
-                            <button type="button" className={styles.uploadRow}>
+                            <button
+                                type="button"
+                                className={styles.uploadRow}
+                                onClick={() => setShowMap(true)}
+                            >
                                 <div className={styles.uploadInfo}>
                                     <span className={styles.uploadTitle}>
                                         Adresa preuzimanja/ dostave
                                     </span>
                                     <span className={styles.uploadSubtitle}>
-                                        Upišite adresu ili odaberite na mapi
+                                        {location
+                                            ? `${location.street} ${location.street_number}, ${location.city}`
+                                            : 'Upišite adresu ili odaberite na mapi'}
                                     </span>
                                 </div>
                                 <MapPin size={20} className={styles.uploadIcon} />
@@ -277,6 +272,15 @@ export default function RegisterPage() {
                             Preskoči za sada
                         </button>
                     </div>
+                    {showMap && (
+                        <LocationPicker
+                            onConfirm={(address) => {
+                                setLocation(address);
+                                setShowMap(false);
+                            }}
+                            onClose={() => setShowMap(false)}
+                        />
+                    )}
                 </>
             )}
         </div>

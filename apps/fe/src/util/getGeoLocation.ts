@@ -10,7 +10,7 @@ export interface GeoAddress {
 
 export async function reverseGeocode(lat: number, lng: number): Promise<GeoAddress | null> {
     const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&zoom=18`,
         { headers: { 'Accept-Language': 'hr' } },
     );
 
