@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res } from '@nestjs/common';
+import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterCompanyDto } from './dto/registerDto.dto';
 import { LoginDto } from './dto/loginDto.dto';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) { }
+    constructor(private readonly authService: AuthService) {}
 
     @Post('register')
     register(@Body() dto: RegisterCompanyDto) {
@@ -27,7 +28,8 @@ export class AuthController {
     }
 
     @Get('confirm-reset-password')
-    confirmResetPassword(@Query('token') token: string) {
-        return this.authService.confirmResetPassword(token);
+    confirmResetPassword(@Query('token') token: string, @Res() res: Response) {
+        this.authService.confirmResetPassword(token);
+        return res.redirect(process.env.CORS_ORIGIN!);
     }
 }
