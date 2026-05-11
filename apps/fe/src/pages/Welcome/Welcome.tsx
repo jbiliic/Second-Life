@@ -2,6 +2,7 @@ import Button from '@/components/Button/Button';
 import Identity from '@/components/Identity/Identity';
 import { Link } from 'react-router-dom';
 import styles from './Welcome.module.css';
+import { routes } from '@/constants/routes';
 
 const Welcome = () => {
     return (
@@ -12,7 +13,7 @@ const Welcome = () => {
                 <Button text="Nastavi" />
                 <p className={styles.loginText}>
                     Već imaš račun?{' '}
-                    <Link to="/login" className={styles.loginLink}>
+                    <Link to={routes.LOGIN} className={styles.loginLink}>
                         Prijavi se
                     </Link>
                 </p>
