@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { MaterialType, MaterialCondition, ListingCategory, UnitType } from '@prisma/client';
+import { ListingCategory, MaterialCondition, MaterialType, UnitType } from '@prisma/client';
+import { Type } from 'class-transformer';
 import {
     IsBoolean,
     IsDateString,
@@ -8,12 +9,10 @@ import {
     IsOptional,
     IsPositive,
     IsString,
-    Min,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class UpdateListingDto {
-    @ApiPropertyOptional({ example: 'EUR pallets — 120x80cm, good condition' })
+    @ApiPropertyOptional({ example: 'EUR pallets - 120x80cm, good condition' })
     @IsOptional()
     @IsString()
     title?: string;
@@ -37,11 +36,6 @@ export class UpdateListingDto {
     @IsOptional()
     @IsEnum(ListingCategory)
     listing_category?: ListingCategory;
-
-    @ApiPropertyOptional({ example: true })
-    @IsOptional()
-    @IsBoolean()
-    isReusable?: boolean;
 
     @ApiPropertyOptional({ example: 500 })
     @IsOptional()
@@ -68,11 +62,6 @@ export class UpdateListingDto {
     @IsPositive()
     @Type(() => Number)
     price_per_unit?: number;
-
-    @ApiPropertyOptional({ example: 'EUR' })
-    @IsOptional()
-    @IsString()
-    currency?: string;
 
     @ApiPropertyOptional({ example: true })
     @IsOptional()

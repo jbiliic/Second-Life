@@ -1,6 +1,6 @@
 // dto/listing-list-item.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { MaterialType, MaterialCondition, UnitType } from '@prisma/client';
+import { MaterialCondition, MaterialType, UnitType } from '@prisma/client';
 
 export class ListingListItemDto {
     @ApiProperty()
@@ -29,9 +29,6 @@ export class ListingListItemDto {
 
     @ApiProperty()
     price_per_unit: number;
-
-    @ApiProperty()
-    currency: string;
 
     @ApiPropertyOptional()
     distance_km: number | null;

@@ -1,12 +1,17 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from '../../common/prisma/prisma.service';
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RegisterCompanyDto } from './dto/registerDto.dto';
-import { LoginDto } from './dto/loginDto.dto';
 import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
 import { AuthenticatedUser } from '../../common/auth/interfaces/authenticatedUser.interface';
 import { MailService } from '../../common/mail/mail.service';
-import { randomBytes } from 'crypto';
+import { PrismaService } from '../../common/prisma/prisma.service';
+import { LoginDto } from './dto/loginDto.dto';
+import { RegisterCompanyDto } from './dto/registerDto.dto';
 
 interface TokenPayload {
     companyId: string;
@@ -14,18 +19,24 @@ interface TokenPayload {
 }
 @Injectable()
 export class AuthService {
-    constructor(private readonly prisma: PrismaService,
+    constructor(
+        private readonly prisma: PrismaService,
         private readonly jwtService: JwtService,
-        private readonly mailService: MailService
-    ) { }
+        private readonly mailService: MailService,
+    ) {}
     /*
     TODO: implementirat redis
     */
     private verificationTokens = new Map<string, TokenPayload>();
-    private resetTokens = new Map<string, { companyId: string; newPassword: string; expires: Date }>();
+    private resetTokens = new Map<
+        string,
+        { companyId: string; newPassword: string; expires: Date }
+    >();
 
     async register(registerDto: RegisterCompanyDto) {
-        const existingCompany = await this.prisma.company.findUnique({ where: { email: registerDto.email } });
+        const existingCompany = await this.prisma.company.findUnique({
+            where: { email: registerDto.email },
+        });
         if (existingCompany) {
             throw new Error('Email already in use');
         }
@@ -50,7 +61,11 @@ export class AuthService {
         this.verificationTokens.set(verificationToken, { companyId: company.id, expires });
         await this.mailService.sendVerificationEmail(company.email, verificationToken);
 
-        const payload = { id: company.id, isAdmin: false, isVerified: company.is_verified } as AuthenticatedUser;
+        const payload = {
+            id: company.id,
+            isAdmin: false,
+            isVerified: company.is_verified,
+        } as AuthenticatedUser;
         const token = this.jwtService.sign(payload);
         return { access_token: token };
     }
@@ -58,8 +73,7 @@ export class AuthService {
     async verifyEmail(token: string) {
         const payload = this.verificationTokens.get(token);
 
-        if (!payload)
-            throw new NotFoundException('Invalid verification token');
+        if (!payload) throw new NotFoundException('Invalid verification token');
 
         if (payload.expires < new Date()) {
             this.verificationTokens.delete(token);
@@ -86,7 +100,11 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const payload = { id: company.id, isAdmin: false, isVerified: company.is_verified } as AuthenticatedUser;
+        const payload = {
+            id: company.id,
+            isAdmin: false,
+            isVerified: company.is_verified,
+        } as AuthenticatedUser;
 
         const token = this.jwtService.sign(payload);
 

@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsNumber, IsEnum, IsBoolean, IsInt, Min, Max } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
-import { MaterialType, MaterialCondition, ListingCategory, UnitType } from '@prisma/client';
+import { ListingCategory, MaterialCondition, MaterialType, UnitType } from '@prisma/client';
+import { Transform, Type } from 'class-transformer';
+import { IsBoolean, IsEnum, IsInt, IsNumber, IsOptional, Max, Min } from 'class-validator';
 
 export class GetListingsQueryDto {
     @ApiPropertyOptional({ example: 1 })
@@ -65,14 +65,7 @@ export class GetListingsQueryDto {
     @IsOptional()
     @Transform(({ value }) => value === 'true')
     @IsBoolean()
-    isReusable?: boolean;
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    @Transform(({ value }) => value === 'true')
-    @IsBoolean()
     delivery_available?: boolean;
-
 
     @ApiPropertyOptional({ example: 100, description: 'Max price per unit' })
     @IsOptional()

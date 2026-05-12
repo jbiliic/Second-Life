@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { MaterialType, MaterialCondition, ListingCategory, UnitType } from '@prisma/client';
+import { ListingCategory, MaterialCondition, MaterialType, UnitType } from '@prisma/client';
 
 class ListingCompanyDto {
     @ApiProperty({ example: 'uuid-here' })
@@ -10,9 +10,6 @@ class ListingCompanyDto {
 
     @ApiPropertyOptional({ example: 'https://cdn.example.com/logo.png' })
     logo_url: string | null;
-
-    @ApiPropertyOptional({ example: 4.7 })
-    trust_score: number | null;
 }
 
 class ListingLocationDto {
@@ -56,10 +53,12 @@ export class GetListingDto {
     @ApiProperty({ example: 'uuid-here' })
     id: string;
 
-    @ApiProperty({ example: 'EUR pallets — 120x80cm, good condition' })
+    @ApiProperty({ example: 'EUR pallets - 120x80cm, good condition' })
     title: string;
 
-    @ApiProperty({ example: 'Lightly used EUR pallets, suitable for reuse. Available for pickup Mon–Fri.' })
+    @ApiProperty({
+        example: 'Lightly used EUR pallets, suitable for reuse. Available for pickup Mon-Fri.',
+    })
     description: string;
 
     @ApiProperty({ enum: MaterialType, example: MaterialType.wood })
@@ -70,9 +69,6 @@ export class GetListingDto {
 
     @ApiProperty({ enum: ListingCategory, example: ListingCategory.pallets })
     listing_category: ListingCategory;
-
-    @ApiProperty({ example: true })
-    isReusable: boolean;
 
     @ApiProperty({ example: 500 })
     quantity: number;
@@ -85,9 +81,6 @@ export class GetListingDto {
 
     @ApiProperty({ example: 2.5 })
     price_per_unit: number;
-
-    @ApiProperty({ example: 'EUR' })
-    currency: string;
 
     @ApiProperty({ example: true })
     delivery_available: boolean;
@@ -113,9 +106,11 @@ export class GetListingDto {
     @ApiProperty({ type: () => ListingImageDto, isArray: true })
     images: ListingImageDto[];
 
-    @ApiPropertyOptional({ example: 12.4, nullable: true, description: 'Distance in km from the requesting location. Null if no coordinates were provided.' })
+    @ApiPropertyOptional({
+        example: 12.4,
+        nullable: true,
+        description:
+            'Distance in km from the requesting location. Null if no coordinates were provided.',
+    })
     distance_km: number | null;
-
-    @ApiProperty({ example: false, description: 'Whether the requesting company has saved this listing. False if unauthenticated.' })
-    is_saved: boolean;
 }

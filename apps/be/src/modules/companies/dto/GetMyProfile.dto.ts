@@ -1,4 +1,3 @@
-
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class GetMyProfileDto {
@@ -25,12 +24,6 @@ export class GetMyProfileDto {
 
     @ApiProperty()
     is_verified: boolean;
-
-    @ApiPropertyOptional()
-    trust_score?: number;
-
-    @ApiPropertyOptional()
-    carbon_credit?: number;
 
     @ApiProperty()
     created_at: Date;
