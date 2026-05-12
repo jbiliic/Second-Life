@@ -10,10 +10,20 @@ import { PrismaModule } from './common/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { CronRelistModule } from './modules/cronRelist/cronRelist.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
 import { ListingsModule } from './modules/listings/listings.module';
 
 @Module({
     imports: [
+        CacheModule.registerAsync({
+            isGlobal: true,
+            useFactory: async () => ({
+                store: redisStore,
+                url: process.env.REDIS_URL,
+                ttl: 1000 * 60 * 5, // 5 minutes default
+            }),
+        }),
         ConfigModule.forRoot({
             envFilePath: '../../.env',
             isGlobal: true,

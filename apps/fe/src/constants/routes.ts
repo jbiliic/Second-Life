@@ -3,6 +3,7 @@ export const routes = {
     LOGIN: '/login',
     REGISTER: '/register',
     HOME: '/home',
+    FORGOT_PASSWORD: '/forgot-password',
     LISTINGS: '/listings',
     CREATE_LISTING: '/listings/create',
     LISTING_DETAIL: '/listings/:id',

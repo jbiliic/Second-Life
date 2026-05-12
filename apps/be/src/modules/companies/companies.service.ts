@@ -64,4 +64,38 @@ export class CompaniesService {
             longitude: Number(loc.longitude),
         })) as LocationDto[];
     }
+
+    async createAndAddPayment(companyId: string, paymentData: Omit<PaymentMethodDto, 'id'>) {
+        const paymentMethod = await this.prisma.companyPaymentMethod.create({
+            data: {
+                ...paymentData,
+                company: { connect: { id: companyId } },
+            },
+        });
+        return paymentMethod;
+    }
+
+    async getPaymentMethods(companyId: string): Promise<PaymentMethodDto[]> {
+        const methods = (await this.prisma.companyPaymentMethod.findMany({
+            where: {
+                company_id: companyId,
+            },
+        })) as PaymentMethodDto[];
+
+        return methods.map((m) => ({
+            id: m.id,
+            type: m.type,
+            is_default: m.is_default,
+            iban: m.iban,
+            bank_name: m.bank_name,
+        }));
+    }
+
+    async updateLogo(companyId: string, logo_url: string) {
+        return await this.prisma.company.update({
+            where: { id: companyId },
+            data: { logo_url },
+            select: { logo_url: true },
+        });
+    }
 }
