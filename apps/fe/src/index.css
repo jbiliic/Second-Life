@@ -1,8 +1,22 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@600&family=Sora:wght@500&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&family=Sora:wght@500&display=swap');
 
 :root {
-    --font-heading: "Sora", sans-serif;
-    --font-body: "Inter", sans-serif;
+    --color-bg-base: #f8f6f1;
+    --color-bg-surface-secondary: #dad4c7;
+
+    --color-text-primary: #2f3437;
+    --color-text-secondary: #606670;
+
+    --color-action-primary: #204d3a;
+    --color-action-supporting: #3a7259;
+
+    --color-success: #2e7d32;
+    --color-warning: #edb95e;
+    --color-error: #d64545;
+    --color-info: #4a90e2;
+
+    --font-heading: 'Sora', sans-serif;
+    --font-body: 'Inter', sans-serif;
 
     --radius-button: 16px;
     --radius-card: 20px;
