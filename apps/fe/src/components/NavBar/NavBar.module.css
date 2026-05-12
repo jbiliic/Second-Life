@@ -1,6 +1,8 @@
 .header {
-    height: 64px;
+    height: 112px;
+    box-sizing: border-box;
     padding-inline: var(--screen-padding);
+    padding-top: var(--space-7);
     background-color: var(--color-bg-base);
     display: flex;
     align-items: center;

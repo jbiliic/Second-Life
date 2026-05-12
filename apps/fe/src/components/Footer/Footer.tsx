@@ -11,7 +11,7 @@ const navItems = [
     { icon: User, route: routes.PROFILE },
 ];
 
-export default function Footer() {
+export const Footer = () => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
 
@@ -34,4 +34,4 @@ export default function Footer() {
             })}
         </nav>
     );
-}
+};

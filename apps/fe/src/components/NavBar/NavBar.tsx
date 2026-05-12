@@ -1,11 +1,11 @@
 import { Menu, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { routes } from '@/constants/routes';
-import styles from './Navbar.module.css';
+import styles from './NavBar.module.css';
 
 const INITIALS = 'EP';
 
-export default function Navbar() {
+export const Navbar = () => {
     const navigate = useNavigate();
 
     function handleMenuClick() {}
@@ -50,4 +50,4 @@ export default function Navbar() {
             </div>
         </header>
     );
-}
+};
