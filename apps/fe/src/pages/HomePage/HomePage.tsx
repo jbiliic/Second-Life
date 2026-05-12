@@ -1,7 +1,12 @@
+import Stats from "../../components/Stats/Stats";
+
 export const HomePage = () => {
     return (
         <div>
-            <h1>Home</h1>
+            <Stats
+                label="Aktivni oglasi"
+                value={12}
+            />
         </div>
     );
 };

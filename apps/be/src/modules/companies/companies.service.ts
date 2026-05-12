@@ -98,4 +98,45 @@ export class CompaniesService {
             select: { logo_url: true },
         });
     }
+
+    async getCO2Saved(companyId: string) {
+        const fromDate = new Date();
+        fromDate.setMonth(fromDate.getMonth() - 3);
+
+        const res = await this.prisma.order.aggregate({
+            where: {
+                seller_company_id: companyId,
+                created_at: { gte: fromDate },
+            },
+            _sum: { co2_saved_kg: true },
+        });
+
+        return { co2_saved_kg: Number(res._sum.co2_saved_kg ?? 0) };
+    }
+
+    async getActiveListingsCount(companyId: string) {
+        const count = await this.prisma.listing.count({
+            where: {
+                company_id: companyId,
+                is_active: true,
+            },
+        });
+
+        return { active_listings: count };
+    }
+
+    async getProfitLast30Days(companyId: string) {
+        const fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - 30);
+
+        const res = await this.prisma.order.aggregate({
+            where: {
+                seller_company_id: companyId,
+                created_at: { gte: fromDate },
+            },
+            _sum: { total: true },
+        });
+
+        return { profit_last_30_days: Number(res._sum.total ?? 0) };
+    }
 }
