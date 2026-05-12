@@ -2,7 +2,6 @@ import styles from './ListingCardHomePage.module.css';
 
 interface ListingCardHomePageProps {
     name: string;
-    materialCondition: string;
     quantity?: number | string;
     unit: string;
     pricePerUnit: number | string;
@@ -13,7 +12,6 @@ interface ListingCardHomePageProps {
 
 const ListingCardHomePage = ({
     name,
-    materialCondition,
     quantity,
     unit,
     pricePerUnit,
@@ -30,7 +28,6 @@ const ListingCardHomePage = ({
             )}
             <div className={styles.body}>
                 <h3 className={styles.title}>{name}</h3>
-                <span className={styles.meta}>{materialCondition}</span>
                 {typeof quantity !== 'undefined' && (
                     <span className={styles.meta}>
                         {quantity} {unit}

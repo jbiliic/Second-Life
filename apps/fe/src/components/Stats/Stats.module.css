@@ -1,34 +1,35 @@
 .card {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: var(--card-padding);
-    min-height: 76px;
+    gap: 1px;
+    padding: 10px 12px;
+    max-height: 64px;
     background-color: #ffffff;
     border: 0.5px solid var(--color-bg-surface-secondary);
     border-radius: var(--radius-card);
     color: var(--color-text-primary);
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .label {
     font-family: var(--font-body);
-    font-size: var(--body-s-size);
-    line-height: var(--body-s-line);
+    font-size: 10px;
+    line-height: 14px;
     color: var(--color-text-secondary);
 }
 
 .value {
-    font-family: var(--font-heading);
+    font-family: var(--font-body);
     font-weight: 500;
-    font-size: var(--h3-size);
-    line-height: var(--h3-line);
+    font-size: 12px;
+    line-height: 16px;
     color: var(--color-text-primary);
 }
 
 .subLabel {
     font-family: var(--font-body);
-    font-size: var(--body-s-size);
-    line-height: var(--body-s-line);
+    font-size: 10px;
+    line-height: 14px;
     color: var(--color-text-secondary);
 }
