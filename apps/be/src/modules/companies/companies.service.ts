@@ -3,6 +3,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { LocationDto } from './dto/location.dto';
 import { UpdateMyProfileDto } from './dto/UpdateMyProfile.dto';
+import { PaymentMethodDto } from './dto/payment.dto';
 
 @Injectable()
 export class CompaniesService {
@@ -84,7 +85,6 @@ export class CompaniesService {
 
         return methods.map((m) => ({
             id: m.id,
-            type: m.type,
             is_default: m.is_default,
             iban: m.iban,
             bank_name: m.bank_name,

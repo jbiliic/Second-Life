@@ -8,7 +8,6 @@ import {
     Length,
     MinLength,
     Matches,
-    IsNotEmpty,
     IsLongitude,
     IsLatitude,
     IsUUID,
