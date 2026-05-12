@@ -101,6 +101,27 @@ export class ListingsService {
         });
     }
 
+    async getHomePageListings(companyId: string) {
+        const listings = await this.prisma.listing.findMany({
+            where: { company_id: companyId },
+            orderBy: { created_at: 'desc' },
+            take: 3,
+            include: {
+                images: { where: { is_primary: true }, take: 1 },
+            },
+        });
+
+        return listings.map((listing) => ({
+            name: listing.title,
+            material_condition: listing.condition,
+            quantity: Number(listing.quantity),
+            unit: listing.unit,
+            price_per_unit: Number(listing.price_per_unit),
+            is_available: listing.is_active,
+            image_url: listing.images[0]?.image_url ?? null,
+        }));
+    }
+
     async getListingsPaginated(query: GetListingsQueryDto): Promise<PaginatedListingsDto> {
         const page = query.page ?? 1;
         const limit = query.limit ?? 10;

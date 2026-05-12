@@ -16,6 +16,7 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@ne
 import { UserGuard } from '../../common/auth/guards/user.guard';
 import { AuthenticatedUser } from '../../common/auth/interfaces/authenticatedUser.interface';
 import { CreateListingDto } from './dto/createListing.dto';
+import { HomePageListingCardDto } from './dto/getHomePageListings.dto';
 import { GetListingsQueryDto } from './dto/getListingQuery.dto';
 import { PaginatedListingsDto } from './dto/getListingsPaginated.dto';
 import { GetListingDto } from './dto/getSingleListing.dto';
@@ -32,6 +33,15 @@ export class ListingsController {
     @ApiResponse({ status: 200, type: PaginatedListingsDto })
     getListings(@Query() query: GetListingsQueryDto): Promise<PaginatedListingsDto> {
         return this.listingsService.getListingsPaginated(query);
+    }
+
+    @Get('home-page')
+    @UseGuards(UserGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Get up to 3 listings for the home page' })
+    @ApiResponse({ status: 200, type: [HomePageListingCardDto] })
+    getHomePageListings(@Req() req: { user: AuthenticatedUser }) {
+        return this.listingsService.getHomePageListings(req.user.id);
     }
 
     @Get(':id')
