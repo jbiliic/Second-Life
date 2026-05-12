@@ -296,7 +296,6 @@ export class ListingsService {
                         id: true,
                         name: true,
                         logo_url: true,
-                        trust_score: true,
                     },
                 },
             },

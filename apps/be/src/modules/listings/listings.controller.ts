@@ -45,7 +45,7 @@ export class ListingsController {
         @Query('lat') lat?: number,
         @Query('lng') lng?: number,
     ): Promise<GetListingDto> {
-        return this.listingsService.getListingById(id, req.user?.id, lat, lng);
+        return this.listingsService.getListingById(id, lat, lng);
     }
 
     @Post()
