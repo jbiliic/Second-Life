@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserGuard } from '../../common/auth/guards/user.guard';
 import { AuthenticatedUser } from '../../common/auth/interfaces/authenticatedUser.interface';
@@ -6,6 +6,7 @@ import { CompaniesService } from './companies.service';
 import { LocationDto } from './dto/location.dto';
 import { UpdateLogoDto } from './dto/updateLogo.dto';
 import { UpdateMyProfileDto } from './dto/UpdateMyProfile.dto';
+import { PaymentMethodDto } from './dto/payment.dto';
 
 @ApiTags('Company')
 @ApiBearerAuth()
