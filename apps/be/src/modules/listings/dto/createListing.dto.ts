@@ -1,22 +1,22 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ListingCategory, MaterialCondition, MaterialType, UnitType } from '@prisma/client';
+import { Type } from 'class-transformer';
 import {
-    IsString,
+    IsArray,
     IsBoolean,
+    IsDateString,
     IsEnum,
+    IsInt,
     IsNumber,
     IsOptional,
-    IsDateString,
-    IsUUID,
-    IsArray,
-    IsInt,
+    IsString,
     IsUrl,
+    IsUUID,
+    Matches,
     Min,
     ValidateIf,
     ValidateNested,
-    Matches,
 } from 'class-validator';
-import { Type } from 'class-transformer';
-import { MaterialType, MaterialCondition, ListingCategory, UnitType } from '@prisma/client';
 
 export class CreateListingImageDto {
     @ApiProperty({ example: 'https://cdn.example.com/image.png' })
@@ -44,7 +44,6 @@ export class CreatePickupSlotDto {
 
     @ApiProperty({ example: '17:00' })
     @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, { message: 'end_time must be in HH:mm format' })
-
     @IsString()
     end_time: string;
 }
@@ -89,10 +88,6 @@ export class CreateListingDto {
     listing_category: ListingCategory;
 
     @ApiProperty()
-    @IsBoolean()
-    isReusable: boolean;
-
-    @ApiProperty()
     @IsNumber()
     @Min(0)
     quantity: number;
@@ -110,10 +105,6 @@ export class CreateListingDto {
     @IsNumber()
     @Min(0)
     price_per_unit: number;
-
-    @ApiProperty({ example: 'EUR' })
-    @IsString()
-    currency: string;
 
     @ApiPropertyOptional()
     @IsOptional()

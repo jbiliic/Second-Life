@@ -1,7 +1,9 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-    IsString,
     IsEmail,
+    IsNotEmpty,
     IsOptional,
+    IsString,
     IsUrl,
     Length,
     MinLength,
@@ -11,7 +13,6 @@ import {
     IsLatitude,
     IsUUID,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class LocationDto {
     @ApiPropertyOptional({ example: 'uuid-here' })
@@ -58,10 +59,10 @@ export class RegisterCompanyDto {
     @IsNotEmpty()
     name: string;
 
-    @ApiPropertyOptional({ example: '12345678901', description: 'Croatian OIB (11 digits)' })
-    @IsNotEmpty()
+    @ApiProperty({ example: '12345678901', description: 'Croatian OIB (11 digits)' })
     @IsString()
-    @Length(11, 11, { message: 'OIB must be exactly 11 characters' })
+    @IsNotEmpty()
+    @Length(11, 11)
     oib: string;
 
     @ApiPropertyOptional({ example: 'https://cdn.example.com/logo.png' })

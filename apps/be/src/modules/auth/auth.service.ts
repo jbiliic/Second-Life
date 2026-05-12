@@ -9,12 +9,13 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import { RegisterCompanyDto } from './dto/registerDto.dto';
-import { LoginDto } from './dto/loginDto.dto';
 import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
 import { AuthenticatedUser } from '../../common/auth/interfaces/authenticatedUser.interface';
 import { MailService } from '../../common/mail/mail.service';
-import { randomBytes } from 'crypto';
+import { PrismaService } from '../../common/prisma/prisma.service';
+import { LoginDto } from './dto/loginDto.dto';
+import { RegisterCompanyDto } from './dto/registerDto.dto';
 
 interface VerifyPayload {
     companyId: string;
@@ -38,7 +39,9 @@ export class AuthService {
         const existingCompany = await this.prisma.company.findUnique({
             where: { email: registerDto.email },
         });
-        if (existingCompany) throw new BadRequestException('Email already in use');
+        if (existingCompany) {
+            throw new Error('Email already in use');
+        }
 
         const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
@@ -107,7 +110,10 @@ export class AuthService {
             isAdmin: false,
             isVerified: company.is_verified,
         } as AuthenticatedUser;
-        return { access_token: this.jwtService.sign(payload) };
+
+        const token = this.jwtService.sign(payload);
+
+        return { access_token: token };
     }
 
     async resetPassword(email: string) {

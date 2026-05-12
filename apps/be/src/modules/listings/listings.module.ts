@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ListingsService } from './listings.service';
-import { ListingsController } from './listings.controller';
 import { CronRelistModule } from '../cronRelist/cronRelist.module';
+import { ListingsController } from './listings.controller';
+import { ListingsService } from './listings.service';
 
 @Module({
     imports: [CronRelistModule],

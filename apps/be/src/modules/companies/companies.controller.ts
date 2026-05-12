@@ -1,16 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
-import { CompaniesService } from './companies.service';
-import { AuthenticatedUser } from '../../common/auth/interfaces/authenticatedUser.interface';
-import { UpdateMyProfileDto } from './dto/UpdateMyProfile.dto';
-import { UserGuard } from '../../common/auth/guards/user.guard';
-import { PaymentMethodDto } from './dto/payment.dto';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserGuard } from '../../common/auth/guards/user.guard';
+import { AuthenticatedUser } from '../../common/auth/interfaces/authenticatedUser.interface';
+import { CompaniesService } from './companies.service';
 import { LocationDto } from './dto/location.dto';
 import { UpdateLogoDto } from './dto/updateLogo.dto';
+import { UpdateMyProfileDto } from './dto/UpdateMyProfile.dto';
 
 @ApiTags('Company')
 @ApiBearerAuth()
-@UseGuards(UserGuard)
 @UseGuards(UserGuard)
 @Controller('/companies')
 export class CompaniesController {

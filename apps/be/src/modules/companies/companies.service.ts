@@ -1,9 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { PrismaService } from '../../common/prisma/prisma.service';
-import { UpdateMyProfileDto } from './dto/UpdateMyProfile.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
+import { PrismaService } from '../../common/prisma/prisma.service';
 import { LocationDto } from './dto/location.dto';
-import { PaymentMethodDto } from './dto/payment.dto';
+import { UpdateMyProfileDto } from './dto/UpdateMyProfile.dto';
 
 @Injectable()
 export class CompaniesService {
@@ -18,8 +17,6 @@ export class CompaniesService {
                 logo_url: true,
                 email: true,
                 is_verified: true,
-                trust_score: true,
-                carbon_credit: true,
             },
         });
     }
