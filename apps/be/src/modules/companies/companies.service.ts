@@ -5,6 +5,7 @@ import { LocationDto } from './dto/location.dto';
 import { UpdateMyProfileDto } from './dto/UpdateMyProfile.dto';
 import { PaymentMethodDto } from './dto/payment.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { reverseGeocode } from '../../common/utils/getGeoLoc.util';
 
 @Injectable()
 export class CompaniesService {
@@ -36,6 +37,11 @@ export class CompaniesService {
             }
             throw error;
         }
+    }
+
+    async createLocationFromCoords(companyId: string, latitude: number, longitude: number) {
+        const locationData = await reverseGeocode(latitude, longitude);
+        return this.createAndAddLocation(companyId, locationData);
     }
 
     async createAndAddLocation(companyId: string, locationData: Omit<LocationDto, 'id'>) {

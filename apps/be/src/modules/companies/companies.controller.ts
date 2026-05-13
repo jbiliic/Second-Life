@@ -42,10 +42,19 @@ export class CompaniesController {
     }
 
     @Post('/locations')
+    @UseGuards(UserGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Add a new location to the company' })
     @ApiResponse({ status: 201, type: LocationDto })
-    createLocation(@Req() req: { user: AuthenticatedUser }, @Body() dto: Omit<LocationDto, 'id'>) {
-        return this.companiesService.createAndAddLocation(req.user.id, dto);
+    createLocation(
+        @Req() req: { user: AuthenticatedUser },
+        @Body() body: { latitude: number; longitude: number },
+    ) {
+        return this.companiesService.createLocationFromCoords(
+            req.user.id,
+            body.latitude,
+            body.longitude,
+        );
     }
 
     @Get('/locations')

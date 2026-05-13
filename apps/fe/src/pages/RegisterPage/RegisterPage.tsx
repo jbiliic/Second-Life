@@ -8,7 +8,6 @@ import uploadIcon from '@/assets/upload.png';
 import { type RegisterDTO } from './dto/register.dto';
 import client from '@/api/client';
 import LocationPicker from '@/components/LocationPicker/LocationPicker';
-import type { GeoAddress } from '@/util/getGeoLocation';
 import FileUpload from '@/components/FileUpload/FileUpload';
 
 interface RegistrationResponse {
@@ -28,7 +27,7 @@ export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [location, setLocation] = useState<GeoAddress | null>(null);
+    const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
     const [showMap, setShowMap] = useState(false);
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [registryFile, setRegistryFile] = useState<File | null>(null);
@@ -61,7 +60,7 @@ export default function RegisterPage() {
         );
 
         if (error || !data) {
-            alert('Došlo je do pogreške prilikom registracije. Molimo pokušajte ponovno.');
+            alert(error);
             return;
         }
 
@@ -76,26 +75,23 @@ export default function RegisterPage() {
             const formData = new FormData();
             formData.append('file', logoFile);
 
-            const { data, error } = await client.post<{ url: string; public_id: string }, FormData>(
-                '/cloudinary/upload',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                },
-            );
-
+            const { data, error } = await client.patch('/companies/me/logo', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
             if (error || !data) {
-                alert('Učitavanje logotipa nije uspjelo. Pokušaj ponovno.');
-                return;
+                alert(
+                    'Došlo je do pogreške prilikom učitavanja logotipa. Molimo pokušajte ponovno kasnije.',
+                );
             }
-
-            await client.patch('/companies/me/logo', { logo_url: data.url });
         }
 
         if (location) {
-            await client.post('/companies/locations', location);
+            const { data, error } = await client.post('/companies/locations', location);
+            if (error || !data) {
+                alert(
+                    'Došlo je do pogreške prilikom dodavanja lokacije. Molimo pokušajte ponovno kasnije.',
+                );
+            }
         }
     };
 
@@ -275,7 +271,7 @@ export default function RegisterPage() {
                                     </span>
                                     <span className={styles.uploadSubtitle}>
                                         {location
-                                            ? `${location.street} ${location.street_number}, ${location.city}`
+                                            ? `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`
                                             : 'Upišite adresu ili odaberite na mapi'}
                                     </span>
                                 </div>
@@ -300,8 +296,8 @@ export default function RegisterPage() {
                     </div>
                     {showMap && (
                         <LocationPicker
-                            onConfirm={(address) => {
-                                setLocation(address);
+                            onConfirm={(coords) => {
+                                setLocation(coords);
                                 setShowMap(false);
                             }}
                             onClose={() => setShowMap(false)}

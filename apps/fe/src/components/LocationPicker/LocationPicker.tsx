@@ -4,7 +4,6 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from './LocationPicker.module.css';
-import { reverseGeocode, type GeoAddress } from '@/util/getGeoLocation';
 
 // Fix leaflet default marker icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -15,7 +14,7 @@ L.Icon.Default.mergeOptions({
 });
 
 interface LocationPickerProps {
-    onConfirm: (address: GeoAddress) => void;
+    onConfirm: (coords: { latitude: number; longitude: number }) => void;
     onClose: () => void;
 }
 
@@ -31,10 +30,9 @@ function MapClickHandler({ onSelect }: { onSelect: (lat: number, lng: number) =>
 export default function LocationPicker({ onConfirm, onClose }: LocationPickerProps) {
     const [selected, setSelected] = useState<{ lat: number; lng: number } | null>(null);
 
-    const handleConfirm = async () => {
+    const handleConfirm = () => {
         if (!selected) return;
-        const address = await reverseGeocode(selected.lat, selected.lng);
-        if (address) onConfirm(address);
+        onConfirm({ latitude: selected.lat, longitude: selected.lng });
     };
 
     return (
