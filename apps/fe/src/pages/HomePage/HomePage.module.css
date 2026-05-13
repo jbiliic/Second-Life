@@ -1,0 +1,97 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--screen-padding);
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.sectionTitle {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: var(--body-m-size);
+    line-height: var(--body-m-line);
+    color: var(--color-text-primary);
+}
+
+.statsRow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.listingGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 108px);
+    gap: var(--card-gap);
+    justify-content: space-between;
+}
+
+.linkBtn {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: var(--body-xs-size);
+    line-height: var(--body-xs-line);
+    color: var(--color-action-primary);
+    cursor: pointer;
+}
+
+.infoCard {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    width: 358px;
+    height: 84px;
+    padding: var(--card-padding);
+    background-color: #ffffff;
+    border-radius: var(--radius-card);
+    border: 0.5px solid var(--color-bg-surface-secondary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+}
+
+.cardTitle {
+    margin: 0 0 4px 0;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
+    color: var(--color-text-primary);
+}
+
+.cardText {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 10px;
+    line-height: 14px;
+    color: var(--color-text-secondary);
+}
+
+.cardIcon {
+    font-size: 18px;
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+}
+
+.errorText {
+    font-family: var(--font-body);
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
+    color: var(--color-error);
+}

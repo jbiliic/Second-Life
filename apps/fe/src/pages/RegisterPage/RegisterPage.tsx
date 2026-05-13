@@ -10,7 +10,6 @@ import client from '@/api/client';
 import LocationPicker from '@/components/LocationPicker/LocationPicker';
 import type { GeoAddress } from '@/util/getGeoLocation';
 import FileUpload from '@/components/FileUpload/FileUpload';
-import { uploadToCloudinary } from '@/util/savePhoto.util';
 
 interface RegistrationResponse {
     access_token: string;
@@ -74,8 +73,25 @@ export default function RegisterPage() {
         navigate(routes.HOME);
 
         if (logoFile) {
-            const imgURL = await uploadToCloudinary(logoFile);
-            await client.patch('/companies/me/logo', { logo_url: imgURL });
+            const formData = new FormData();
+            formData.append('file', logoFile);
+
+            const { data, error } = await client.post<{ url: string; public_id: string }, FormData>(
+                '/cloudinary/upload',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                },
+            );
+
+            if (error || !data) {
+                alert('Učitavanje logotipa nije uspjelo. Pokušaj ponovno.');
+                return;
+            }
+
+            await client.patch('/companies/me/logo', { logo_url: data.url });
         }
 
         if (location) {

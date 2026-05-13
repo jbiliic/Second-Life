@@ -8,6 +8,7 @@ import { ContentTypeMiddleware } from './common/middleware/content-type.middlewa
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { CronRelistModule } from './modules/cronRelist/cronRelist.module';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -38,6 +39,7 @@ import { ListingsModule } from './modules/listings/listings.module';
         ScheduleModule.forRoot(),
         PrismaModule,
         AuthModule,
+        CloudinaryModule,
         CompaniesModule,
         ListingsModule,
         CronRelistModule,

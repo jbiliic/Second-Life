@@ -67,4 +67,25 @@ export class CompaniesController {
     updateLogo(@Req() req: { user: AuthenticatedUser }, @Body() dto: UpdateLogoDto) {
         return this.companiesService.updateLogo(req.user.id, dto.logo_url);
     }
+
+    @Get('/stats/co2-saved')
+    @ApiOperation({ summary: 'Get CO2 saved in last 3 months' })
+    @ApiResponse({ status: 200 })
+    getCO2Saved(@Req() req: { user: AuthenticatedUser }) {
+        return this.companiesService.getCO2Saved(req.user.id);
+    }
+
+    @Get('/stats/active-listings')
+    @ApiOperation({ summary: 'Get number of active listings' })
+    @ApiResponse({ status: 200 })
+    getActiveListingsCount(@Req() req: { user: AuthenticatedUser }) {
+        return this.companiesService.getActiveListingsCount(req.user.id);
+    }
+
+    @Get('/stats/profit-last-30-days')
+    @ApiOperation({ summary: 'Get profit from last 30 days' })
+    @ApiResponse({ status: 200 })
+    getProfitLast30Days(@Req() req: { user: AuthenticatedUser }) {
+        return this.companiesService.getProfitLast30Days(req.user.id);
+    }
 }
