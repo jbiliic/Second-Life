@@ -1,18 +1,20 @@
 import { routes } from '@/constants/routes';
-import Welcome from '@/pages/Welcome/Welcome';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Login from './pages/LogInPage/LoginPage';
-import ForgotPasswordPage from './pages/ForgotPasswPage/ForgotPasswordPage';
-import RegisterPage from './pages/RegisterPage/RegisterPage';
 import Layout from './layout/Layout';
+import ForgotPasswordPage from './pages/ForgotPasswPage/ForgotPasswordPage';
 import { HomePage } from './pages/HomePage/HomePage';
+import ListingsPage from './pages/ListingsPage/ListingsPage';
+import Login from './pages/LogInPage/LoginPage';
 import { MyListingsPage } from './pages/MyListingsPage/MyListingsPage';
+import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
+import RegisterPage from './pages/RegisterPage/RegisterPage';
+import WelcomePage from './pages/WelcomePage/WelcomePage';
 
 export const Router = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path={routes.LANDING} element={<Welcome />} />
+                <Route path={routes.LANDING} element={<WelcomePage />} />
                 <Route path={routes.LOGIN} element={<Login />} />
                 <Route path={routes.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
                 <Route path={routes.REGISTER} element={<RegisterPage />} />
@@ -20,6 +22,8 @@ export const Router = () => {
                 <Route element={<Layout />}>
                     <Route path={routes.HOME} element={<HomePage />} />
                     <Route path={routes.MY_LISTINGS} element={<MyListingsPage />} />
+                    <Route path={routes.LISTINGS} element={<ListingsPage />} />
+                    <Route path={routes.NOTFOUND} element={<NotFoundPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>
