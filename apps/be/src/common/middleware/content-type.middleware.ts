@@ -4,6 +4,10 @@ import { NextFunction, Request, Response } from 'express';
 @Injectable()
 export class ContentTypeMiddleware implements NestMiddleware {
     use(req: Request, res: Response, next: NextFunction) {
+        if (req.path.includes('/cloudinary/upload')) {
+            next();
+            return;
+        }
         const methodsWithBody = ['POST', 'PUT', 'PATCH'];
         if (methodsWithBody.includes(req.method)) {
             const contentLength = Number(req.headers['content-length'] ?? 0);
