@@ -4,7 +4,10 @@ import { NextFunction, Request, Response } from 'express';
 @Injectable()
 export class ContentTypeMiddleware implements NestMiddleware {
     use(req: Request, res: Response, next: NextFunction) {
-        if (req.path.includes('/companies/me/logo')) {
+        if (
+            req.path.includes('/companies/me/logo') ||
+            (req.path.includes('/listings') && req.method === 'POST')
+        ) {
             next();
             return;
         }
