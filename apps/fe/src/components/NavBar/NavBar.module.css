@@ -19,11 +19,15 @@
     font-weight: 500;
     font-size: var(--h3-size);
     line-height: var(--h3-line);
-    color: var(--color-action-primary);
+    color: var(--color-text-primary);
     letter-spacing: -0.3px;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+}
+
+.titleGreen {
+    color: var(--color-action-primary);
 }
 
 .right {

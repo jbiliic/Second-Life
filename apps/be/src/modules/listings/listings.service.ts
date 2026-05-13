@@ -87,6 +87,7 @@ export class ListingsService {
         });
 
         return listings.map((listing) => ({
+            id: listing.id,
             name: listing.title,
             material_condition: listing.condition,
             quantity: Number(listing.quantity),

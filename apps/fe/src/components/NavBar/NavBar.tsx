@@ -7,10 +7,11 @@ import { useAuth } from '@/providers/auth/useAuth';
 type NavbarConfig = {
     title: string;
     showBack: boolean;
+    titleClass?: string;
 };
 
 const navbarConfig: Record<string, NavbarConfig> = {
-    [routes.HOME]: { title: 'SecondLife', showBack: false },
+    [routes.HOME]: { title: 'SecondLife', showBack: false, titleClass: styles.titleGreen },
     [routes.LISTINGS]: { title: 'Moji oglasi', showBack: false },
     [routes.MY_LISTINGS]: { title: 'Moji oglasi', showBack: false },
     [routes.CREATE_LISTING]: { title: 'Novi oglas', showBack: true },
@@ -62,7 +63,7 @@ export const NavBar = () => {
                 )}
             </button>
 
-            <span className={styles.title}>{config.title}</span>
+            <span className={`${styles.title} ${config.titleClass ?? ''}`}>{config.title}</span>
 
             <div className={styles.right}>
                 <button

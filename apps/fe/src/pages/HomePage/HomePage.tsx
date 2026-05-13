@@ -13,6 +13,7 @@ interface HomePageStatItem {
 }
 
 interface HomePageListingItem {
+    id: string;
     name: string;
     quantity?: number | string;
     unit: string;
@@ -34,6 +35,7 @@ interface ApiProfitLast30Days {
 }
 
 interface ApiHomePageListing {
+    id: string;
     name: string;
     material_condition: string;
     quantity: number;
@@ -149,6 +151,7 @@ const useHomePageListings = (): HookState<HomePageListingItem[]> => {
             }
 
             const mapped = result.data.map((item) => ({
+                id: item.id,
                 name: item.name,
                 quantity: item.quantity,
                 unit: item.unit,
@@ -232,7 +235,7 @@ export const HomePage = () => {
                     ) : (
                         (listings.data ?? []).map((item) => (
                             <ListingCardHomePage
-                                key={`${item.name}-${item.unit}-${item.pricePerUnit}`}
+                                key={`${item.id}`}
                                 name={item.name}
                                 quantity={item.quantity}
                                 unit={item.unit}
