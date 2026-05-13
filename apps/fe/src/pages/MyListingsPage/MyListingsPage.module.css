@@ -1,0 +1,185 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    background-color: var(--color-bg-base);
+    font-family: var(--font-body);
+}
+
+/* ── Header ── */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--screen-padding);
+    padding-top: var(--space-5);
+}
+
+.headerMenu {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: var(--color-text-primary);
+}
+
+.headerTitle {
+    font-family: var(--font-heading);
+    font-size: var(--h3-size);
+    line-height: var(--h3-line);
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.headerIconBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: var(--color-text-primary);
+}
+
+.avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 9999px;
+    background-color: var(--color-action-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatarDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background-color: #fff;
+}
+
+/* ── Filter tabs ── */
+.filters {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--screen-padding);
+}
+
+.filterChip {
+    border: none;
+    border-radius: var(--radius-chip);
+    padding: 0 var(--space-4);
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--motion-normal) var(--motion-ease);
+    background: transparent;
+    color: var(--color-text-secondary);
+}
+.filterChipActive {
+    background-color: var(--color-action-primary);
+    color: #fff;
+    border-color: var(--color-action-primary);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--card-gap);
+    padding: var(--space-2) var(--screen-padding);
+    flex: 1;
+}
+
+.skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: var(--card-gap);
+    padding: var(--space-2) var(--screen-padding);
+}
+
+.skeletonCard {
+    background: var(--color-bg-surface-secondary);
+    border-radius: var(--radius-card);
+    height: 90px;
+    animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.45;
+    }
+}
+
+.emptyState {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8) var(--hero-padding);
+    gap: var(--space-5);
+    text-align: center;
+}
+
+.emptyIllustration {
+    width: 356px;
+    height: 331px;
+}
+
+.emptyTexts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.emptyTitle {
+    font-family: var(--font-heading);
+    font-size: var(--h3-size);
+    line-height: var(--h3-line);
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.emptySubtitle {
+    font-size: var(--body-m-size);
+    line-height: var(--body-m-line);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.emptyBtn {
+    width: 100%;
+    max-width: 327px;
+    padding: 16px var(--space-5);
+    background-color: var(--color-action-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-button);
+    font-family: var(--font-body);
+    font-size: var(--body-l-size);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--motion-normal) var(--motion-ease);
+}
+
+.emptyBtn:hover {
+    background-color: var(--color-action-supporting);
+}

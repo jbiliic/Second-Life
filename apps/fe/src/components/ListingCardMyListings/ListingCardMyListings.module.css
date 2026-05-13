@@ -1,37 +1,37 @@
 .card {
-    width: 358px;
-    min-height: 98px;
-    border-radius: var(--radius-card);
-    background-color: #ffffff;
-    border: 1px solid var(--color-bg-surface-secondary);
-    padding: var(--card-padding);
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 10px;
+    width: 100%;
+    min-height: 98px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-radius: var(--radius-card);
+    padding: var(--card-padding);
     cursor: pointer;
-    transition: background var(--motion-fast) var(--motion-ease);
+    transition: opacity var(--motion-fast) var(--motion-ease);
     -webkit-tap-highlight-color: transparent;
 }
 
-.card:hover {
-    background-color: var(--color-bg-base);
+.card:active {
+    opacity: 0.7;
 }
 
 .image {
-    width: 66px;
-    height: 66px;
-    border-radius: var(--radius-input);
+    width: 75px;
+    height: 64px;
     object-fit: cover;
+    border-radius: var(--radius-input);
     flex-shrink: 0;
     background-color: var(--color-bg-surface-secondary);
 }
 
 .content {
-    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 2px;
+    flex: 1;
     min-width: 0;
 }
 
@@ -46,8 +46,8 @@
 .title {
     font-family: var(--font-body);
     font-weight: 600;
-    font-size: var(--body-m-size);
-    line-height: var(--body-m-line);
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
     color: var(--color-text-primary);
     white-space: nowrap;
     overflow: hidden;

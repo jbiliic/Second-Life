@@ -6,6 +6,7 @@ import ForgotPasswordPage from './pages/ForgotPasswPage/ForgotPasswordPage';
 import RegisterPage from './pages/RegisterPage/RegisterPage';
 import Layout from './layout/Layout';
 import { HomePage } from './pages/HomePage/HomePage';
+import { MyListingsPage } from './pages/MyListingsPage/MyListingsPage';
 
 export const Router = () => {
     return (
@@ -18,6 +19,7 @@ export const Router = () => {
 
                 <Route element={<Layout />}>
                     <Route path={routes.HOME} element={<HomePage />} />
+                    <Route path={routes.MY_LISTINGS} element={<MyListingsPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>

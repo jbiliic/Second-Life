@@ -15,6 +15,33 @@ export class ListingsService {
         private readonly cronRelistService: CronRelistService,
     ) {}
 
+    private formatDateHr(date: Date): string {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}.${month}.${year}.`;
+    }
+
+    private normalizeMyListingsStatus(status?: string): 'active' | 'expired' | 'all' {
+        if (!status) {
+            return 'all';
+        }
+
+        if (status === 'aktivno') {
+            return 'active';
+        }
+
+        if (status === 'sve') {
+            return 'all';
+        }
+
+        if (status === 'active' || status === 'expired' || status === 'all') {
+            return status;
+        }
+
+        return 'all';
+    }
+
     async createListing(companyId: string, dto: CreateListingDto) {
         const listing = await this.prisma.listing.create({
             data: {
@@ -119,6 +146,64 @@ export class ListingsService {
             price_per_unit: Number(listing.price_per_unit),
             is_available: listing.is_active,
             image_url: listing.images[0]?.image_url ?? null,
+        }));
+    }
+
+    async getMyListings(companyId: string, status?: string) {
+        const normalizedStatus = this.normalizeMyListingsStatus(status);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const where: any = {
+            company_id: companyId,
+        };
+
+        if (normalizedStatus === 'active') {
+            where.is_active = true;
+            where.available_until = { gte: today };
+        }
+
+        if (normalizedStatus === 'expired') {
+            where.OR = [{ is_active: false }, { available_until: { lt: today } }];
+        }
+
+        const [defaultLocation, listings] = await this.prisma.$transaction([
+            this.prisma.location.findFirst({
+                where: { companies: { some: { id: companyId } } },
+                orderBy: { created_at: 'asc' },
+                select: { latitude: true, longitude: true },
+            }),
+            this.prisma.listing.findMany({
+                where,
+                orderBy: { created_at: 'desc' },
+                include: {
+                    images: { where: { is_primary: true }, take: 1 },
+                    location: true,
+                },
+            }),
+        ]);
+
+        const baseLat = defaultLocation ? Number(defaultLocation.latitude) : null;
+        const baseLng = defaultLocation ? Number(defaultLocation.longitude) : null;
+
+        return listings.map((listing) => ({
+            id: listing.id,
+            title: listing.title,
+            quantity: Number(listing.quantity),
+            unit: listing.unit,
+            location: listing.location.city,
+            distanceKm:
+                baseLat !== null && baseLng !== null
+                    ? calculateDistance(
+                          baseLat,
+                          baseLng,
+                          Number(listing.location.latitude),
+                          Number(listing.location.longitude),
+                      )
+                    : 0,
+            expiresAt: this.formatDateHr(listing.available_until),
+            pricePerUnit: Number(listing.price_per_unit),
+            imageUrl: listing.images[0]?.image_url ?? null,
         }));
     }
 

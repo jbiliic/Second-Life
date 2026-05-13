@@ -17,6 +17,7 @@ import { UserGuard } from '../../common/auth/guards/user.guard';
 import { AuthenticatedUser } from '../../common/auth/interfaces/authenticatedUser.interface';
 import { CreateListingDto } from './dto/createListing.dto';
 import { HomePageListingCardDto } from './dto/getHomePageListings.dto';
+import { GetMyListingsQueryDto, MyListingCardDto } from './dto/getMyListings.dto';
 import { GetListingsQueryDto } from './dto/getListingQuery.dto';
 import { PaginatedListingsDto } from './dto/getListingsPaginated.dto';
 import { GetListingDto } from './dto/getSingleListing.dto';
@@ -42,6 +43,18 @@ export class ListingsController {
     @ApiResponse({ status: 200, type: [HomePageListingCardDto] })
     getHomePageListings(@Req() req: { user: AuthenticatedUser }) {
         return this.listingsService.getHomePageListings(req.user.id);
+    }
+
+    @Get('my')
+    @UseGuards(UserGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Get my listings for My Listings page' })
+    @ApiResponse({ status: 200, type: [MyListingCardDto] })
+    getMyListings(
+        @Req() req: { user: AuthenticatedUser },
+        @Query() query: { status?: string },
+    ): Promise<MyListingCardDto[]> {
+        return this.listingsService.getMyListings(req.user.id, query.status);
     }
 
     @Get(':id')

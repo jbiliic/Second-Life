@@ -3,6 +3,8 @@ import client from '../../api/client';
 import ListingCardHomePage from '../../components/ListingCardHomePage/ListingCardHomePage';
 import Stats from '../../components/Stats/Stats';
 import styles from './HomePage.module.css';
+import { Navigate, useNavigate } from 'react-router';
+import { routes } from '@/constants/routes';
 
 interface HomePageStatItem {
     label: string;
@@ -171,6 +173,7 @@ export const HomePage = () => {
     const co2Saved = useCo2Saved();
     const profitLast30Days = useProfitLast30Days();
     const listings = useHomePageListings();
+    const navigate = useNavigate();
 
     const statsError =
         activeListings.error || co2Saved.error || profitLast30Days.error ? true : false;
@@ -215,7 +218,11 @@ export const HomePage = () => {
             <section className={styles.section}>
                 <div className={styles.sectionHeader}>
                     <h2 className={styles.sectionTitle}>Moji aktivni oglasi</h2>
-                    <button className={styles.linkBtn} type="button">
+                    <button
+                        className={styles.linkBtn}
+                        onClick={() => navigate(routes.MY_LISTINGS)}
+                        type="button"
+                    >
                         Vidi sve
                     </button>
                 </div>

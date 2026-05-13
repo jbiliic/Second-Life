@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import styles from './ListingCard.module.css';
+import styles from './ListingCardMyListings.module.css';
 
 type ListingCardProps = {
     id: string;
@@ -9,12 +9,11 @@ type ListingCardProps = {
     location: string;
     distanceKm: number;
     expiresAt: string;
-    co2SavedKg: number;
     pricePerUnit: number;
     imageUrl: string;
 };
 
-export const ListingCard = ({
+export const ListingCardMyListings = ({
     id,
     title,
     quantity,
@@ -22,7 +21,6 @@ export const ListingCard = ({
     location,
     distanceKm,
     expiresAt,
-    co2SavedKg,
     pricePerUnit,
     imageUrl,
 }: ListingCardProps) => {
@@ -46,11 +44,10 @@ export const ListingCard = ({
                     {quantity} {unit}
                 </span>
                 <span className={styles.caption}>
-                    {location}, {distanceKm}km
+                    {location}, {Math.round(distanceKm)}km
                 </span>
                 <div className={styles.row}>
                     <span className={styles.caption}>Ističe: {expiresAt}</span>
-                    <span className={styles.caption}>CO2; {co2SavedKg} kg</span>
                 </div>
             </div>
         </div>
