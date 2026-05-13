@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 @Injectable()
 export class ContentTypeMiddleware implements NestMiddleware {
     use(req: Request, res: Response, next: NextFunction) {
-        if (req.path.includes('/cloudinary/upload')) {
+        if (req.path.includes('/companies/me/logo')) {
             next();
             return;
         }

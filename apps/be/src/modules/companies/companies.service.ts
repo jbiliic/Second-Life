@@ -4,10 +4,14 @@ import { PrismaService } from '../../common/prisma/prisma.service';
 import { LocationDto } from './dto/location.dto';
 import { UpdateMyProfileDto } from './dto/UpdateMyProfile.dto';
 import { PaymentMethodDto } from './dto/payment.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class CompaniesService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly cloudinary: CloudinaryService,
+    ) {}
 
     async getProfile(id: string) {
         return await this.prisma.company.findUnique({
@@ -91,7 +95,17 @@ export class CompaniesService {
         }));
     }
 
-    async updateLogo(companyId: string, logo_url: string) {
+    async updateLogo(companyId: string, file: Express.Multer.File) {
+        if (!file) {
+            throw new ConflictException('File is required');
+        }
+
+        const logo_url = await this.cloudinary.uploadImage(file);
+
+        if (!logo_url) {
+            throw new ConflictException('Failed to upload image');
+        }
+
         return await this.prisma.company.update({
             where: { id: companyId },
             data: { logo_url },

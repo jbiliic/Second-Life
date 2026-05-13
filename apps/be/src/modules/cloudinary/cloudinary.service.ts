@@ -31,9 +31,6 @@ export class CloudinaryService {
             resource_type: 'image',
         });
 
-        return {
-            url: result.secure_url,
-            public_id: result.public_id,
-        };
+        return result.secure_url;
     }
 }
