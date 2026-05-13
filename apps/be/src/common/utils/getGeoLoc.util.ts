@@ -16,7 +16,7 @@ export async function reverseGeocode(latitude: number, longitude: number): Promi
         {
             headers: {
                 'Accept-Language': 'hr',
-                'User-Agent': 'YourAppName/1.0 (jopab03@gmail.com)',
+                'User-Agent': 'YourAppName/1.0 (' + process.env.MAIL_ADDRESS + ')',
             },
         },
     );
