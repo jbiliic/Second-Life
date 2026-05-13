@@ -25,26 +25,6 @@ export class CloudinaryService {
             throw new BadRequestException('File is required');
         }
 
-        try {
-            const dataUrl = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
-
-            const result = await cloudinary.uploader.unsigned_upload(dataUrl, this.uploadPreset, {
-                resource_type: 'image',
-            });
-
-            return {
-                url: result.secure_url,
-                public_id: result.public_id,
-            };
-        } catch (error) {
-            console.error('Cloudinary upload error:', error);
-            throw error;
-        }
-
-        if (!file) {
-            throw new BadRequestException('File is required');
-        }
-
         const dataUrl = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
 
         const result = await cloudinary.uploader.unsigned_upload(dataUrl, this.uploadPreset, {
