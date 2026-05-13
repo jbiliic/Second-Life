@@ -5,12 +5,15 @@ import client from '@/api/client';
 import styles from './LoginPage.module.css';
 import { useNavigate } from 'react-router';
 import { routes } from '@/constants/routes';
+import { useAuth } from '@/providers/auth/useAuth';
 
 interface LoginResponse {
     access_token: string;
+    companyName: string;
 }
 
 export default function Login() {
+    const { login } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -32,7 +35,8 @@ export default function Login() {
             return;
         }
 
-        localStorage.setItem('access_token', data.access_token);
+        login(data.access_token, data.companyName);
+        navigate(routes.HOME);
     };
 
     return (

@@ -2,8 +2,7 @@ import { Menu, Bell, ArrowLeft } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { routes } from '@/constants/routes';
 import styles from './NavBar.module.css';
-
-const INITIALS = 'EP';
+import { useAuth } from '@/providers/auth/useAuth';
 
 type NavbarConfig = {
     title: string;
@@ -23,6 +22,16 @@ const DEFAULT_CONFIG: NavbarConfig = { title: 'SecondLife', showBack: false };
 export const NavBar = () => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
+    const { companyName } = useAuth();
+
+    const initials = companyName
+        ? companyName
+              .split(' ')
+              .map((w) => w[0])
+              .join('')
+              .slice(0, 2)
+              .toUpperCase()
+        : '?';
 
     const config = navbarConfig[pathname] ?? DEFAULT_CONFIG;
 
@@ -49,7 +58,7 @@ export const NavBar = () => {
                 {config.showBack ? (
                     <ArrowLeft size={22} strokeWidth={1.5} />
                 ) : (
-                    <Menu size={22} strokeWidth={1.5} />
+                    <Menu size={24} strokeWidth={1.5} />
                 )}
             </button>
 
@@ -62,7 +71,7 @@ export const NavBar = () => {
                     onClick={handleNotificationsClick}
                     aria-label="Obavijesti"
                 >
-                    <Bell size={22} strokeWidth={1.5} />
+                    <Bell size={18} strokeWidth={1.5} />
                 </button>
                 <div
                     className={styles.avatar}
@@ -71,7 +80,7 @@ export const NavBar = () => {
                     tabIndex={0}
                     aria-label="Profil"
                 >
-                    {INITIALS}
+                    {initials}
                 </div>
             </div>
         </header>

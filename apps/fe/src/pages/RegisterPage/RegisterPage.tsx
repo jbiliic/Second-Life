@@ -10,12 +10,15 @@ import client from '@/api/client';
 import LocationPicker from '@/components/LocationPicker/LocationPicker';
 import FileUpload from '@/components/FileUpload/FileUpload';
 import { Input } from '@/components/InputForm/InputForm';
+import { useAuth } from '@/providers/auth/useAuth';
 
 interface RegistrationResponse {
     access_token: string;
+    companyName: string;
 }
 
 export default function RegisterPage() {
+    const { login } = useAuth();
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
 
@@ -63,7 +66,7 @@ export default function RegisterPage() {
             return;
         }
 
-        localStorage.setItem('access_token', data.access_token);
+        login(data.access_token, data.companyName);
         setStep(2);
     };
 
