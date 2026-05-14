@@ -8,6 +8,7 @@ import Login from './pages/LogInPage/LoginPage';
 import { MyListingsPage } from './pages/MyListingsPage/MyListingsPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import RegisterPage from './pages/RegisterPage/RegisterPage';
+import SingleListingPage from './pages/SingleListingPage/SingleListingPage';
 import WelcomePage from './pages/WelcomePage/WelcomePage';
 
 export const Router = () => {
@@ -23,6 +24,7 @@ export const Router = () => {
                     <Route path={routes.HOME} element={<HomePage />} />
                     <Route path={routes.MY_LISTINGS} element={<MyListingsPage />} />
                     <Route path={routes.LISTINGS} element={<ListingsPage />} />
+                    <Route path={routes.LISTING_DETAIL} element={<SingleListingPage />} />
                     <Route path={routes.NOTFOUND} element={<NotFoundPage />} />
                 </Route>
             </Routes>

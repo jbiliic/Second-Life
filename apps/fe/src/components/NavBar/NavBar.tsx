@@ -1,7 +1,7 @@
 import { routes } from '@/constants/routes';
 import { useNavbar } from '@/contexts/NavbarContext';
 import { ArrowLeft, Bell, Menu } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import styles from './NavBar.module.css';
 
 const INITIALS = 'EP';
@@ -14,6 +14,7 @@ type NavbarConfig = {
 const navbarConfig: Record<string, NavbarConfig> = {
     [routes.HOME]: { title: 'SecondLife', showBack: false },
     [routes.LISTINGS]: { title: 'Pretraži', showBack: false },
+    [routes.LISTING_DETAIL]: { title: 'Detalji', showBack: true },
     [routes.MY_LISTINGS]: { title: 'Moji oglasi', showBack: false },
     [routes.CREATE_LISTING]: { title: 'Novi oglas', showBack: true },
     [routes.PROFILE]: { title: 'Profil', showBack: false },
@@ -30,7 +31,9 @@ export const NavBar = () => {
 
     const { navbarOverride } = useNavbar();
 
-    const routeConfig = navbarConfig[pathname] ?? DEFAULT_CONFIG;
+    const routeConfig =
+        Object.entries(navbarConfig).find(([path]) => matchPath(path, pathname))?.[1] ??
+        DEFAULT_CONFIG;
 
     const config = {
         ...routeConfig,
