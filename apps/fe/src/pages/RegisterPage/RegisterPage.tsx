@@ -60,6 +60,7 @@ export default function RegisterPage() {
             '/auth/register',
             registerData,
         );
+        console.log('FULL RESULT:', { data, error });
 
         if (error || !data) {
             alert(error);
