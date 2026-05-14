@@ -1,6 +1,7 @@
-import { Menu, Bell, ArrowLeft } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { routes } from '@/constants/routes';
+import { useNavbar } from '@/contexts/NavbarContext';
+import { ArrowLeft, Bell, Menu } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './NavBar.module.css';
 
 const INITIALS = 'EP';
@@ -12,21 +13,36 @@ type NavbarConfig = {
 
 const navbarConfig: Record<string, NavbarConfig> = {
     [routes.HOME]: { title: 'SecondLife', showBack: false },
-    [routes.LISTINGS]: { title: 'Moji oglasi', showBack: false },
+    [routes.LISTINGS]: { title: 'Pretraži', showBack: false },
     [routes.MY_LISTINGS]: { title: 'Moji oglasi', showBack: false },
     [routes.CREATE_LISTING]: { title: 'Novi oglas', showBack: true },
     [routes.PROFILE]: { title: 'Profil', showBack: false },
 };
 
-const DEFAULT_CONFIG: NavbarConfig = { title: 'SecondLife', showBack: false };
+const DEFAULT_CONFIG: NavbarConfig = {
+    title: 'SecondLife',
+    showBack: false,
+};
 
 export const NavBar = () => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
 
-    const config = navbarConfig[pathname] ?? DEFAULT_CONFIG;
+    const { navbarOverride } = useNavbar();
+
+    const routeConfig = navbarConfig[pathname] ?? DEFAULT_CONFIG;
+
+    const config = {
+        ...routeConfig,
+        ...navbarOverride,
+    };
 
     function handleLeftClick() {
+        if (config.showBack && config.onBack) {
+            config.onBack();
+            return;
+        }
+
         if (config.showBack) {
             navigate(-1);
         }
@@ -64,6 +80,7 @@ export const NavBar = () => {
                 >
                     <Bell size={22} strokeWidth={1.5} />
                 </button>
+
                 <div
                     className={styles.avatar}
                     onClick={handleAvatarClick}

@@ -4,6 +4,7 @@
     align-items: center;
     gap: var(--space-1);
 
+    width: 100%;
     max-width: 357px;
     height: fit-content;
 

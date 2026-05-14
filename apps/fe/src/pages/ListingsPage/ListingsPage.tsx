@@ -1,10 +1,33 @@
+import FilterIcon from '@/assets/icons/filter-icon.svg';
+import Filter from '@/components/Filter/Filter';
 import Searchbar from '@/components/Searchbar/Searchbar';
+import { useNavbar } from '@/contexts/NavbarContext';
 import { useGetListings } from '@/hooks/useGetListings';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import styles from './ListingsPage.module.css';
 
 const ListingsPage = () => {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+    const { setNavbarOverride } = useNavbar();
+
+    useEffect(() => {
+        if (isFilterOpen) {
+            setNavbarOverride({
+                title: 'Filteri',
+                showBack: true,
+                onBack: () => setIsFilterOpen(false),
+            });
+        } else {
+            setNavbarOverride(null);
+        }
+
+        return () => {
+            setNavbarOverride(null);
+        };
+    }, [isFilterOpen, setNavbarOverride]);
 
     const { listings, loading, error, pagination } = useGetListings({
         page,
@@ -19,16 +42,27 @@ const ListingsPage = () => {
         );
     }, [listings, search]);
 
+    if (isFilterOpen) {
+        return <Filter onClose={() => setIsFilterOpen(false)} />;
+    }
+
     return (
-        <div>
-            <h1>Oglasi</h1>
+        <div className={styles.container}>
+            <div className={styles.filtersContainer}>
+                <Searchbar value={search} onChange={setSearch} />
 
-            <Searchbar value={search} onChange={setSearch} />
+                <img
+                    src={FilterIcon}
+                    alt="Filter"
+                    className={styles.filterIcon}
+                    onClick={() => setIsFilterOpen(true)}
+                />
+            </div>
 
-            <div>
-                {loading && <p>Učitavanje...</p>}
+            <div className={styles.listingsContainer}>
+                {loading && <span className={styles.loadingText}>Učitavanje...</span>}
 
-                {error && <p>{error}</p>}
+                {error && <span className={styles.errorText}>{error}</span>}
 
                 {!loading && !error && (
                     <>
