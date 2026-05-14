@@ -1,8 +1,9 @@
 import FilterIcon from '@/assets/icons/filter-icon.svg';
 import Filter from '@/components/Filter/Filter';
+import ListingCard from '@/components/ListingCard/ListingCard';
 import Searchbar from '@/components/Searchbar/Searchbar';
+import { getMockListings } from '@/constants/listings.mock';
 import { useNavbar } from '@/contexts/NavbarContext';
-import { useGetListings } from '@/hooks/useGetListings';
 import { useEffect, useMemo, useState } from 'react';
 import styles from './ListingsPage.module.css';
 
@@ -29,12 +30,14 @@ const ListingsPage = () => {
         };
     }, [isFilterOpen, setNavbarOverride]);
 
-    const { listings, loading, error, pagination } = useGetListings({
-        page,
-        limit: 10,
-        sort_by: 'created_at',
-        sort_order: 'desc',
-    });
+    // const { listings, loading, error, pagination } = useGetListings({
+    //     page,
+    //     limit: 10,
+    //     sort_by: 'created_at',
+    //     sort_order: 'desc',
+    // });
+
+    const { listings, loading, error, pagination } = getMockListings(page, 5);
 
     const filteredListings = useMemo(() => {
         return listings.filter((listing) =>
@@ -67,26 +70,30 @@ const ListingsPage = () => {
                 {!loading && !error && (
                     <>
                         {filteredListings.map((listing) => (
-                            <div key={listing.id}>
-                                <h2>{listing.title}</h2>
-
-                                <p>{listing.company_name}</p>
-
-                                <p>
-                                    {listing.price_per_unit} € / {listing.unit}
-                                </p>
-
-                                <p>{listing.city}</p>
-
-                                {listing.distance_km && <p>{listing.distance_km.toFixed(1)} km</p>}
-                            </div>
+                            <ListingCard
+                                key={listing.id}
+                                id={listing.id}
+                                title={listing.title}
+                                condition={listing.condition}
+                                quantity={0}
+                                unit={listing.unit}
+                                location={listing.city}
+                                distanceKm={listing.distance_km ?? 0}
+                                expiresAt={listing.expires_at ?? ''}
+                                pricePerUnit={listing.price_per_unit}
+                                imageUrl={listing.cover_image_url ?? ''}
+                            />
                         ))}
                     </>
                 )}
             </div>
 
-            <div>
-                <button disabled={!pagination?.prev} onClick={() => setPage((prev) => prev - 1)}>
+            <div className={styles.paginationContainer}>
+                <button
+                    disabled={!pagination?.prev}
+                    onClick={() => setPage((prev) => prev - 1)}
+                    className={styles.paginationButton}
+                >
                     Prethodna
                 </button>
 
@@ -94,7 +101,11 @@ const ListingsPage = () => {
                     {pagination?.page} / {pagination?.total_pages}
                 </span>
 
-                <button disabled={!pagination?.next} onClick={() => setPage((prev) => prev + 1)}>
+                <button
+                    disabled={!pagination?.next}
+                    onClick={() => setPage((prev) => prev + 1)}
+                    className={styles.paginationButton}
+                >
                     Sljedeća
                 </button>
             </div>

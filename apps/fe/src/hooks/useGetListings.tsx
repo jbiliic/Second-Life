@@ -12,6 +12,7 @@ export type Listing = {
     unit: string;
     price_per_unit: number;
     distance_km: number | null;
+    expires_at: string | null;
 };
 
 export type ListingsResponse = {

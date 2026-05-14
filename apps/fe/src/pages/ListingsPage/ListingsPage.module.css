@@ -7,8 +7,6 @@
 
     padding: var(--screen-padding);
     gap: var(--space-6);
-
-    height: 100%;
 }
 
 .container > div {
@@ -36,4 +34,44 @@
 
 .errorText {
     color: var(--color-error);
+}
+
+.listingsContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    gap: var(--space-4);
+}
+
+.paginationContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: var(--space-4);
+}
+
+.paginationButton {
+    padding: var(--space-2) var(--space-4);
+
+    font-family: var(--font-body);
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
+
+    border: none;
+    border-radius: var(--radius-input);
+
+    background-color: var(--color-action-primary);
+    border: solid 2px var(--color-action-primary);
+
+    color: var(--color-text-white);
+}
+
+.paginationButton:disabled {
+    background-color: var(--color-bg-surface-secondary);
+    border: solid 2px var(--color-bg-surface-secondary);
+
+    color: var(--color-text-secondary);
 }
