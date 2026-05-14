@@ -4,17 +4,17 @@ import path from "path";
 import { defineConfig, loadEnv } from "vite";
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, "../../", "");
+  const env = loadEnv(mode, "../../", "VITE_");
 
   return {
     plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
     define: {
-      "process.env": env,
+      "process.env.VITE_SERVER_URL": JSON.stringify(env.VITE_SERVER_URL),
     },
     server: {
       proxy: {
         "/api": {
-          target: env.VITE_API_URL,
+          target: env.VITE_SERVER_URL || "http://localhost:3000",
           changeOrigin: true,
         },
       },
