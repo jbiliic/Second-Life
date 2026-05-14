@@ -10,6 +10,9 @@ class ListingCompanyDto {
 
     @ApiPropertyOptional({ example: 'https://cdn.example.com/logo.png' })
     logo_url: string | null;
+
+    @ApiProperty({ example: true })
+    is_verified: boolean;
 }
 
 class ListingLocationDto {

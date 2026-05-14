@@ -1,15 +1,21 @@
 import deliveryIcon from '@/assets/icons/delivery-icon.svg';
 import locationIcon from '@/assets/icons/location-icon.svg';
 import Button from '@/components/Button/Button';
-import { mockListing } from '@/constants/listingDetail.mock';
+import { useGetListing } from '@/hooks/useGetSingleListing';
 import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styles from './ListingDetailPage.module.css';
 
 const ListingDetailPage = () => {
     const navigate = useNavigate();
+    const { id } = useParams();
+
     const [activeIndex, setActiveIndex] = useState(0);
     const startX = useRef<number | null>(null);
+
+    const { listing, loading, error } = useGetListing(id || '');
+
+    if (listing === null) return <span className={styles.errorText}>Oglas nije pronađen</span>;
 
     const handleTouchStart = (e: React.TouchEvent) => {
         startX.current = e.touches[0].clientX;
@@ -26,7 +32,7 @@ const ListingDetailPage = () => {
         const threshold = 50;
 
         if (diff < -threshold) {
-            setActiveIndex((prev) => (prev < mockListing.images.length - 1 ? prev + 1 : prev));
+            setActiveIndex((prev) => (prev < listing.images.length - 1 ? prev + 1 : prev));
         }
 
         if (diff > threshold) {
@@ -37,6 +43,14 @@ const ListingDetailPage = () => {
 
         console.log('end');
     };
+
+    {
+        loading && <span className={styles.loadingText}>Učitavanje...</span>;
+    }
+
+    {
+        error && <span className={styles.errorText}>{error}</span>;
+    }
 
     return (
         <div className={styles.container}>
@@ -49,13 +63,13 @@ const ListingDetailPage = () => {
                         onTouchEnd={handleTouchEnd}
                     >
                         <img
-                            src={mockListing.images[activeIndex].image_url}
+                            src={listing.images[activeIndex].image_url}
                             alt={`Slika ${activeIndex + 1}`}
                             className={styles.mainImage}
                         />
 
                         <div className={styles.dots}>
-                            {mockListing.images.map((_, index) => (
+                            {listing.images.map((_, index) => (
                                 <span
                                     key={index}
                                     className={`${styles.dot} ${
@@ -67,22 +81,22 @@ const ListingDetailPage = () => {
                     </div>
                     <div className={styles.infoContainer}>
                         <p className={styles.title}>
-                            {mockListing.title} ({mockListing.condition})
+                            {listing.title} ({listing.condition})
                         </p>
                         <p className={styles.subtitle}>
-                            {mockListing.price_per_unit} €/{mockListing.unit}
+                            {listing.price_per_unit} €/{listing.unit}
                         </p>
                         <p className={styles.info}>
-                            Dostupno {mockListing.quantity} {mockListing.unit}
+                            Dostupno {listing.quantity} {listing.unit}
                         </p>
-                        <p className={styles.info}>Ističe {mockListing.expires_at}</p>
+                        <p className={styles.info}>Ističe {listing.available_until}</p>
                     </div>
                 </div>
                 <div className={styles.companyInfo}>
                     <img src={deliveryIcon} alt="Dostava" className={styles.deliveryIcon} />
                     <div className={styles.companyInfoText}>
-                        <span className={styles.companyText}>{mockListing.company.name}</span>
-                        {mockListing.company.is_verified && (
+                        <span className={styles.companyText}>{listing.company.name}</span>
+                        {listing.company.is_verified && (
                             <span className={styles.companyLabel}>Verificirano</span>
                         )}
                     </div>
@@ -92,8 +106,8 @@ const ListingDetailPage = () => {
                     <div className={styles.locationInfo}>
                         <span className={styles.locationLabel}>Lokacija preuzimanja</span>
                         <span className={styles.locationText}>
-                            {mockListing.location.city}, {mockListing.location.street}{' '}
-                            {mockListing.location.street_number}
+                            {listing.location.city}, {listing.location.street}{' '}
+                            {listing.location.street_number}
                         </span>
                     </div>
                 </div>

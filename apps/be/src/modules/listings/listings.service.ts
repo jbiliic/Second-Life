@@ -466,6 +466,7 @@ export class ListingsService {
                         id: true,
                         name: true,
                         logo_url: true,
+                        is_verified: true,
                     },
                 },
             },
@@ -491,6 +492,7 @@ export class ListingsService {
                 id: listing.company.id,
                 name: listing.company.name,
                 logo_url: listing.company.logo_url ?? null,
+                is_verified: listing.company.is_verified,
             },
             location: {
                 city: listing.location.city,
