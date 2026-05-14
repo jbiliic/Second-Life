@@ -15,6 +15,7 @@ import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/loginDto.dto';
 import { RegisterCompanyDto } from './dto/registerDto.dto';
+import { ApiBody, ApiQuery } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -35,11 +36,13 @@ export class AuthController {
     }
 
     @Post('reset-password')
+    @ApiBody({ schema: { properties: { email: { type: 'string' } } } })
     resetPassword(@Body('email') email: string) {
         return this.authService.resetPassword(email);
     }
 
     @Get('confirm-reset-password')
+    @ApiQuery({ name: 'token', required: true })
     confirmResetPassword(@Query('token') token: string, @Res() res: Response) {
         this.authService.confirmResetPassword(token);
         return res.redirect(process.env.CORS_ORIGIN!);
