@@ -5,14 +5,14 @@ import styles from './Filter.module.css';
 type MaterialCondition = 'A' | 'B' | 'C' | null;
 
 type FiltersState = {
-    category: string;
+    material_type: string;
     location: string;
 
-    priceMin: string;
-    priceMax: string;
+    min_price: string;
+    max_price: string;
 
-    quantityMin: string;
-    quantityMax: string;
+    min_quantity: string;
+    max_quantity: string;
 
     weightMin: string;
     weightMax: string;
@@ -27,14 +27,14 @@ type ListingFiltersProps = {
 
 const Filter = ({ onClose, onApply }: ListingFiltersProps) => {
     const [filters, setFilters] = useState<FiltersState>({
-        category: '',
+        material_type: '',
         location: '',
 
-        priceMin: '',
-        priceMax: '',
+        min_price: '',
+        max_price: '',
 
-        quantityMin: '',
-        quantityMax: '',
+        min_quantity: '',
+        max_quantity: '',
 
         weightMin: '',
         weightMax: '',
@@ -59,14 +59,17 @@ const Filter = ({ onClose, onApply }: ListingFiltersProps) => {
             <div className={styles.field}>
                 <label className={styles.label}>Kategorija</label>
                 <select
-                    value={filters.category}
-                    onChange={(e) => updateField('category', e.target.value)}
+                    value={filters.material_type}
+                    onChange={(e) => updateField('material_type', e.target.value)}
                     className={styles.select}
                 >
                     <option value="">Sve kategorije</option>
+                    <option value="cardboard">Karton</option>
+                    <option value="wood">Drvo</option>
                     <option value="plastic">Plastika</option>
                     <option value="metal">Metal</option>
-                    <option value="paper">Papir</option>
+                    <option value="glass">Staklo</option>
+                    <option value="other">Ostalo</option>
                 </select>
             </div>
 
@@ -76,7 +79,6 @@ const Filter = ({ onClose, onApply }: ListingFiltersProps) => {
                     type="text"
                     value={filters.location}
                     onChange={(e) => updateField('location', e.target.value)}
-                    placeholder=""
                     className={styles.input}
                 />
             </div>
@@ -87,15 +89,15 @@ const Filter = ({ onClose, onApply }: ListingFiltersProps) => {
                     <input
                         type="number"
                         placeholder="Min €"
-                        value={filters.priceMin}
-                        onChange={(e) => updateField('priceMin', e.target.value)}
+                        value={filters.min_price}
+                        onChange={(e) => updateField('min_price', e.target.value)}
                         className={styles.input}
                     />
                     <input
                         type="number"
                         placeholder="Max €"
-                        value={filters.priceMax}
-                        onChange={(e) => updateField('priceMax', e.target.value)}
+                        value={filters.max_price}
+                        onChange={(e) => updateField('max_price', e.target.value)}
                         className={styles.input}
                     />
                 </div>
@@ -106,16 +108,16 @@ const Filter = ({ onClose, onApply }: ListingFiltersProps) => {
                 <div className={styles.range}>
                     <input
                         type="number"
-                        placeholder="Min kom"
-                        value={filters.quantityMin}
-                        onChange={(e) => updateField('quantityMin', e.target.value)}
+                        placeholder="Min"
+                        value={filters.min_quantity}
+                        onChange={(e) => updateField('min_quantity', e.target.value)}
                         className={styles.input}
                     />
                     <input
                         type="number"
-                        placeholder="Max kom"
-                        value={filters.quantityMax}
-                        onChange={(e) => updateField('quantityMax', e.target.value)}
+                        placeholder="Max"
+                        value={filters.max_quantity}
+                        onChange={(e) => updateField('max_quantity', e.target.value)}
                         className={styles.input}
                     />
                 </div>
@@ -173,11 +175,7 @@ const Filter = ({ onClose, onApply }: ListingFiltersProps) => {
                 </div>
             </div>
 
-            <Button
-                text="Prikaži rezultate"
-                onClick={() => handleApply()}
-                className={styles.button}
-            />
+            <Button text="Prikaži rezultate" onClick={handleApply} className={styles.button} />
         </div>
     );
 };

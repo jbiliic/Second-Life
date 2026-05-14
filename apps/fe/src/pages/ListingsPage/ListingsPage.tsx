@@ -2,14 +2,26 @@ import FilterIcon from '@/assets/icons/filter-icon.svg';
 import Filter from '@/components/Filter/Filter';
 import ListingCard from '@/components/ListingCard/ListingCard';
 import Searchbar from '@/components/Searchbar/Searchbar';
-import { getMockListings } from '@/constants/listings.mock';
 import { useNavbar } from '@/contexts/NavbarContext';
-import { useEffect, useMemo, useState } from 'react';
+import { useGetListings } from '@/hooks/useGetListings';
+import { useEffect, useState } from 'react';
 import styles from './ListingsPage.module.css';
 
 const ListingsPage = () => {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
+    const [filters, setFilters] = useState({
+        category: '',
+        location: '',
+
+        priceMin: '',
+        priceMax: '',
+
+        quantityMin: '',
+        quantityMax: '',
+
+        condition: null as 'A' | 'B' | 'C' | null,
+    });
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const { setNavbarOverride } = useNavbar();
@@ -30,23 +42,46 @@ const ListingsPage = () => {
         };
     }, [isFilterOpen, setNavbarOverride]);
 
-    // const { listings, loading, error, pagination } = useGetListings({
-    //     page,
-    //     limit: 10,
-    //     sort_by: 'created_at',
-    //     sort_order: 'desc',
-    // });
+    const { listings, loading, error, pagination } = useGetListings({
+        page,
+        limit: 10,
 
-    const { listings, loading, error, pagination } = getMockListings(page, 5);
+        search,
 
-    const filteredListings = useMemo(() => {
-        return listings.filter((listing) =>
-            listing.title.toLowerCase().includes(search.toLowerCase()),
-        );
-    }, [listings, search]);
+        material_type: filters.category || undefined,
+
+        condition: filters.condition || undefined,
+
+        min_price: filters.priceMin ? Number(filters.priceMin) : undefined,
+
+        max_price: filters.priceMax ? Number(filters.priceMax) : undefined,
+
+        min_quantity: filters.quantityMin ? Number(filters.quantityMin) : undefined,
+
+        sort_by: 'created_at',
+        sort_order: 'desc',
+    });
+
+    // THIS WAS ONLY A MOCK FOR TESTING PAGINATION, REPLACE WITH REAL API CALL
+
+    // const { listings, loading, error, pagination } = getMockListings(page, 5);
+
+    // const filteredListings = useMemo(() => {
+    //     return listings.filter((listing) =>
+    //         listing.title.toLowerCase().includes(search.toLowerCase()),
+    //     );
+    // }, [listings, search]);
 
     if (isFilterOpen) {
-        return <Filter onClose={() => setIsFilterOpen(false)} />;
+        return (
+            <Filter
+                onClose={() => setIsFilterOpen(false)}
+                onApply={(newFilters) => {
+                    setFilters(newFilters);
+                    setPage(1);
+                }}
+            />
+        );
     }
 
     return (
@@ -69,7 +104,7 @@ const ListingsPage = () => {
 
                 {!loading && !error && (
                     <>
-                        {filteredListings.map((listing) => (
+                        {listings.map((listing) => (
                             <ListingCard
                                 key={listing.id}
                                 id={listing.id}

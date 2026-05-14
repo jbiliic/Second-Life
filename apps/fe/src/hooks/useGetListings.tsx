@@ -27,6 +27,7 @@ export type ListingsResponse = {
 export type ListingsFilters = {
     page?: number;
     limit?: number;
+    search?: string;
     material_type?: string;
     condition?: string;
     listing_category?: string;

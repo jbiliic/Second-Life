@@ -214,21 +214,62 @@ export class ListingsService {
 
         const where: any = {
             is_active: true,
-            ...(query.material_type && { material_type: query.material_type }),
-            ...(query.condition && { condition: query.condition }),
-            ...(query.listing_category && { listing_category: query.listing_category }),
-            ...(query.unit && { unit: query.unit }),
+
+            ...(query.search && {
+                OR: [
+                    {
+                        title: {
+                            contains: query.search,
+                            mode: 'insensitive',
+                        },
+                    },
+                    {
+                        location: {
+                            city: {
+                                contains: query.search,
+                                mode: 'insensitive',
+                            },
+                        },
+                    },
+                ],
+            }),
+
+            ...(query.material_type && {
+                material_type: query.material_type,
+            }),
+
+            ...(query.condition && {
+                condition: query.condition,
+            }),
+
+            ...(query.listing_category && {
+                listing_category: query.listing_category,
+            }),
+
+            ...(query.unit && {
+                unit: query.unit,
+            }),
+
             ...(query.delivery_available !== undefined && {
                 delivery_available: query.delivery_available,
             }),
+
             ...((query.min_price !== undefined || query.max_price !== undefined) && {
                 price_per_unit: {
-                    ...(query.min_price !== undefined && { gte: query.min_price }),
-                    ...(query.max_price !== undefined && { lte: query.max_price }),
+                    ...(query.min_price !== undefined && {
+                        gte: query.min_price,
+                    }),
+
+                    ...(query.max_price !== undefined && {
+                        lte: query.max_price,
+                    }),
                 },
             }),
+
             ...(query.min_quantity !== undefined && {
-                quantity: { gte: query.min_quantity },
+                quantity: {
+                    gte: query.min_quantity,
+                },
             }),
         };
 
@@ -296,11 +337,25 @@ export class ListingsService {
             const distanceMap = new Map(pageIds.map((l) => [l.id, l.distance_km]));
 
             const listings = await this.prisma.listing.findMany({
-                where: { id: { in: pageIds.map((l) => l.id) } },
+                where: {
+                    id: {
+                        in: pageIds.map((l) => l.id),
+                    },
+                },
+
                 include: {
-                    images: { where: { is_primary: true }, take: 1 },
+                    images: {
+                        where: { is_primary: true },
+                        take: 1,
+                    },
+
                     location: true,
-                    company: { select: { name: true } },
+
+                    company: {
+                        select: {
+                            name: true,
+                        },
+                    },
                 },
             });
 
@@ -337,9 +392,18 @@ export class ListingsService {
                 skip,
                 take: limit,
                 include: {
-                    images: { where: { is_primary: true }, take: 1 },
+                    images: {
+                        where: { is_primary: true },
+                        take: 1,
+                    },
+
                     location: true,
-                    company: { select: { name: true } },
+
+                    company: {
+                        select: {
+                            name: true,
+                        },
+                    },
                 },
             }),
         ]);

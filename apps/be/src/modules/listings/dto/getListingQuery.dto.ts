@@ -85,6 +85,13 @@ export class GetListingsQueryDto {
     @Type(() => Number)
     min_quantity?: number;
 
+    @ApiPropertyOptional({
+        example: 'plastika',
+        description: 'Search by listing title or city',
+    })
+    @IsOptional()
+    search?: string;
+
     @ApiPropertyOptional({ enum: ['price', 'quantity', 'created_at', 'distance'] })
     @IsOptional()
     sort_by?: 'price' | 'quantity' | 'created_at' | 'distance';
