@@ -10,16 +10,13 @@ import { MailService } from './mail.service';
             inject: [ConfigService],
             useFactory: (config: ConfigService) => ({
                 transport: {
-                    host: config.get('MAIL_HOST'),
-                    port: config.get<number>('MAIL_PORT'),
-                    secure: false,
+                    host: 'smtp.resend.com',
+                    port: 465,
+                    secure: true,
                     auth: {
-                        user: config.get('MAIL_USER'),
-                        pass: config.get('MAIL_PASS'),
+                        user: 'resend',
+                        pass: config.get('RESEND_API_KEY'),
                     },
-                },
-                defaults: {
-                    from: `"${config.get('MAIL_FROM_NAME')}" <${config.get('MAIL_FROM_ADDRESS')}>`,
                 },
             }),
         }),
