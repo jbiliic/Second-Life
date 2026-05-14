@@ -18,6 +18,8 @@
     --color-error: #d64545;
     --color-info: #4a90e2;
 
+    --color-border: #d1d1d1;
+
     --font-heading: 'Sora', sans-serif;
     --font-body: 'Inter', sans-serif;
 
@@ -50,6 +52,9 @@
 
     --body-xs-size: 10px;
     --body-xs-line: 14px;
+
+    --body-xxs-size: 8px;
+    --body-xxs-line: 12px;
 
     --space-1: 4px;
     --space-2: 8px;
