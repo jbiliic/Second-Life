@@ -73,7 +73,9 @@ export class AuthService {
             { companyId: company.id } as VerifyPayload,
             1000 * 60 * 5,
         );
-        await this.mailService.sendVerificationEmail(company.email, verificationToken);
+        this.mailService.sendVerificationEmail(company.email, verificationToken).catch((err) => {
+            console.error('Verification email failed:', err.message);
+        });
 
         const payload = {
             id: company.id,
@@ -126,7 +128,9 @@ export class AuthService {
             { companyId: company.id, newPassword } as ResetPayload,
             1000 * 60 * 5,
         );
-        await this.mailService.sendPasswordResetEmail(company.email, newPassword, token);
+        this.mailService.sendPasswordResetEmail(company.email, newPassword, token).catch((err) => {
+            console.error('Reset email failed:', err.message);
+        });
 
         return { message: 'Password reset email sent' };
     }
