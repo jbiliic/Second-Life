@@ -3,7 +3,7 @@ import client from '../../api/client';
 import ListingCardHomePage from '../../components/ListingCardHomePage/ListingCardHomePage';
 import Stats from '../../components/Stats/Stats';
 import styles from './HomePage.module.css';
-import { Navigate, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { routes } from '@/constants/routes';
 
 interface HomePageStatItem {

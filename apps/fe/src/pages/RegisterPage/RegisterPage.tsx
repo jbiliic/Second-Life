@@ -95,6 +95,8 @@ export default function RegisterPage() {
                 );
             }
         }
+        if (registryFile) {
+        }
     };
 
     return (
