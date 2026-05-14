@@ -6,16 +6,11 @@ type MaterialCondition = 'A' | 'B' | 'C' | null;
 
 type FiltersState = {
     material_type: string;
-    location: string;
 
     min_price: string;
     max_price: string;
 
     min_quantity: string;
-    max_quantity: string;
-
-    weightMin: string;
-    weightMax: string;
 
     condition: MaterialCondition;
 };
@@ -28,16 +23,11 @@ type ListingFiltersProps = {
 const Filter = ({ onClose, onApply }: ListingFiltersProps) => {
     const [filters, setFilters] = useState<FiltersState>({
         material_type: '',
-        location: '',
 
         min_price: '',
         max_price: '',
 
         min_quantity: '',
-        max_quantity: '',
-
-        weightMin: '',
-        weightMax: '',
 
         condition: null,
     });
@@ -74,16 +64,6 @@ const Filter = ({ onClose, onApply }: ListingFiltersProps) => {
             </div>
 
             <div className={styles.field}>
-                <label className={styles.label}>Lokacija</label>
-                <input
-                    type="text"
-                    value={filters.location}
-                    onChange={(e) => updateField('location', e.target.value)}
-                    className={styles.input}
-                />
-            </div>
-
-            <div className={styles.field}>
                 <label className={styles.label}>Cijena</label>
                 <div className={styles.range}>
                     <input
@@ -105,42 +85,13 @@ const Filter = ({ onClose, onApply }: ListingFiltersProps) => {
 
             <div className={styles.field}>
                 <label className={styles.label}>Količina</label>
-                <div className={styles.range}>
-                    <input
-                        type="number"
-                        placeholder="Min"
-                        value={filters.min_quantity}
-                        onChange={(e) => updateField('min_quantity', e.target.value)}
-                        className={styles.input}
-                    />
-                    <input
-                        type="number"
-                        placeholder="Max"
-                        value={filters.max_quantity}
-                        onChange={(e) => updateField('max_quantity', e.target.value)}
-                        className={styles.input}
-                    />
-                </div>
-            </div>
-
-            <div className={styles.field}>
-                <label className={styles.label}>Kilaža</label>
-                <div className={styles.range}>
-                    <input
-                        type="number"
-                        placeholder="Min kg"
-                        value={filters.weightMin}
-                        onChange={(e) => updateField('weightMin', e.target.value)}
-                        className={styles.input}
-                    />
-                    <input
-                        type="number"
-                        placeholder="Max kg"
-                        value={filters.weightMax}
-                        onChange={(e) => updateField('weightMax', e.target.value)}
-                        className={styles.input}
-                    />
-                </div>
+                <input
+                    type="number"
+                    placeholder="Min"
+                    value={filters.min_quantity}
+                    onChange={(e) => updateField('min_quantity', e.target.value)}
+                    className={styles.input}
+                />
             </div>
 
             <div className={styles.field}>

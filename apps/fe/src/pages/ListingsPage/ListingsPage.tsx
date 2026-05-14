@@ -11,14 +11,12 @@ const ListingsPage = () => {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
     const [filters, setFilters] = useState({
-        category: '',
-        location: '',
+        material_type: '',
 
-        priceMin: '',
-        priceMax: '',
+        min_price: '',
+        max_price: '',
 
-        quantityMin: '',
-        quantityMax: '',
+        min_quantity: '',
 
         condition: null as 'A' | 'B' | 'C' | null,
     });
@@ -48,29 +46,19 @@ const ListingsPage = () => {
 
         search,
 
-        material_type: filters.category || undefined,
+        material_type: filters.material_type || undefined,
 
         condition: filters.condition || undefined,
 
-        min_price: filters.priceMin ? Number(filters.priceMin) : undefined,
+        min_price: filters.min_price ? Number(filters.min_price) : undefined,
 
-        max_price: filters.priceMax ? Number(filters.priceMax) : undefined,
+        max_price: filters.max_price ? Number(filters.max_price) : undefined,
 
-        min_quantity: filters.quantityMin ? Number(filters.quantityMin) : undefined,
+        min_quantity: filters.min_quantity ? Number(filters.min_quantity) : undefined,
 
         sort_by: 'created_at',
         sort_order: 'desc',
     });
-
-    // THIS WAS ONLY A MOCK FOR TESTING PAGINATION, REPLACE WITH REAL API CALL
-
-    // const { listings, loading, error, pagination } = getMockListings(page, 5);
-
-    // const filteredListings = useMemo(() => {
-    //     return listings.filter((listing) =>
-    //         listing.title.toLowerCase().includes(search.toLowerCase()),
-    //     );
-    // }, [listings, search]);
 
     if (isFilterOpen) {
         return (
