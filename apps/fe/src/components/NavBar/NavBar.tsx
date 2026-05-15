@@ -1,6 +1,7 @@
-import { Menu, Bell, ArrowLeft } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { routes } from '@/constants/routes';
+import { useNavbar } from '@/contexts/NavbarContext';
+import { ArrowLeft, Bell, Menu } from 'lucide-react';
+import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import styles from './NavBar.module.css';
 import { useAuth } from '@/providers/auth/useAuth';
 
@@ -11,6 +12,7 @@ type NavbarConfig = {
 };
 
 const navbarConfig: Record<string, NavbarConfig> = {
+    [routes.LISTING_DETAIL]: { title: 'Detalji', showBack: true },
     [routes.HOME]: { title: 'SecondLife', showBack: false, titleClass: styles.titleGreen },
     [routes.LISTINGS]: { title: 'Moji oglasi', showBack: false },
     [routes.MY_LISTINGS]: { title: 'Moji oglasi', showBack: false },
@@ -18,7 +20,10 @@ const navbarConfig: Record<string, NavbarConfig> = {
     [routes.PROFILE]: { title: 'Profil', showBack: false },
 };
 
-const DEFAULT_CONFIG: NavbarConfig = { title: 'SecondLife', showBack: false };
+const DEFAULT_CONFIG: NavbarConfig = {
+    title: 'SecondLife',
+    showBack: false,
+};
 
 export const NavBar = () => {
     const navigate = useNavigate();
@@ -34,9 +39,23 @@ export const NavBar = () => {
               .toUpperCase()
         : '?';
 
-    const config = navbarConfig[pathname] ?? DEFAULT_CONFIG;
+    const { navbarOverride } = useNavbar();
+
+    const routeConfig =
+        Object.entries(navbarConfig).find(([path]) => matchPath(path, pathname))?.[1] ??
+        DEFAULT_CONFIG;
+
+    const config = {
+        ...routeConfig,
+        ...navbarOverride,
+    };
 
     function handleLeftClick() {
+        if (config.showBack && config.onBack) {
+            config.onBack();
+            return;
+        }
+
         if (config.showBack) {
             navigate(-1);
         }
@@ -74,6 +93,7 @@ export const NavBar = () => {
                 >
                     <Bell size={18} strokeWidth={1.5} />
                 </button>
+
                 <div
                     className={styles.avatar}
                     onClick={handleAvatarClick}

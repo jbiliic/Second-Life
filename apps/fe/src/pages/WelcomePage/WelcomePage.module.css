@@ -22,10 +22,10 @@
     font-size: 12px;
     line-height: 16px;
 
-    color: #606670;
+    color: var(--color-text-secondary);
 }
 
 .loginLink {
     text-decoration: none;
-    color: #000000;
+    color: var(--color-action-primary);
 }

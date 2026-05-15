@@ -1,8 +1,8 @@
 .button {
-    background-color: #2f3437;
-    border: solid 2px #2f3437;
+    background-color: var(--color-action-primary);
+    border: solid 2px var(--color-action-primary);
 
-    color: #ffffff;
+    color: var(--color-text-white);
 
     width: 246px;
     height: 48px;

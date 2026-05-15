@@ -9,4 +9,5 @@ export const routes = {
     LISTING_DETAIL: '/listings/:id',
     MY_LISTINGS: '/my-listings',
     PROFILE: '/profile',
+    NOTFOUND: '*',
 };
