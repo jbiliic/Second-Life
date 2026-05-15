@@ -103,11 +103,8 @@ const ListingsPage = () => {
                                 id={listing.id}
                                 title={listing.title}
                                 condition={listing.condition}
-                                quantity={listing.quantity}
                                 unit={listing.unit}
                                 location={listing.city}
-                                distance_km={listing.distance_km}
-                                available_until={listing.available_until ?? ''}
                                 pricePerUnit={listing.price_per_unit}
                                 imageUrl={listing.cover_image_url ?? ''}
                             />

@@ -11,9 +11,6 @@ export type Listing = {
     condition: string;
     unit: string;
     price_per_unit: number;
-    distance_km: number | null;
-    quantity: number;
-    available_until: string | null;
 };
 
 export type ListingsResponse = {
