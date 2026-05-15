@@ -9,7 +9,6 @@
 ![Backend](https://img.shields.io/badge/backend-NestJS-red)
 ![Database](https://img.shields.io/badge/database-PostgreSQL-blue)
 ![ORM](https://img.shields.io/badge/ORM-Prisma-2D3748)
-![Docs](https://img.shields.io/badge/docs-Swagger-green)
 
 ![Frontend](https://img.shields.io/badge/frontend-React-61DAFB)
 ![Build Tool](https://img.shields.io/badge/bundler-Vite-646CFF)
@@ -27,6 +26,18 @@
 **SecondLife. First Choice.**
 
 SecondLife is a B2B marketplace platform that connects companies with surplus packaging materials and those who need them. The goal is to reduce waste, optimize costs, and enable seamless participation in the circular economy.
+
+## 🌐 Live Demo
+
+The deployed application is available here:
+
+[Open SecondLife Demo](https://second-life-1.onrender.com/)
+
+## 🎨 Prototype
+
+You can explore the interactive platform prototype on Figma:
+
+[View Figma Prototype](https://www.figma.com/proto/oQSPmS52f2XWlN2kulSXJB/SecondLife?node-id=251-6440&p=f&t=wHDA7TUF0B452Hno-1&scaling=scale-down&content-scaling=fixed&page-id=169%3A4968&starting-point-node-id=251%3A6440&show-proto-sidebar=1)
 
 ## 🚀 Problem
 
@@ -50,7 +61,6 @@ SecondLife enables:
 - 🔍 Search by material type and location
 - 🤝 B2B order management
 - 🚚 Pickup coordination
-- ⭐ Save listings (favorites)
 - 📊 Track activity through orders
 
 ## 🏗️ Tech Stack
@@ -61,7 +71,6 @@ SecondLife enables:
 - PostgreSQL
 - Prisma
 - JWT Authentication
-- Swagger API documentation
 
 **Frontend**
 
@@ -74,38 +83,46 @@ SecondLife enables:
 ### Auth
 
 - `POST /auth/register` - Company registration
+- `GET /auth/verify` - Verify company email address
 - `POST /auth/login` - Login (JWT)
+- `POST /auth/reset-password` - Send password reset email
+- `GET /auth/confirm-reset-password` - Validate password reset token and redirect user
+- `GET /auth/validate` - Validate and refresh JWT token
 
 ### Companies
 
 - `GET /companies/me` - Profile
 - `PUT /companies/me` - Update profile
+- `POST /companies/locations` - Add a new company location
+- `GET /companies/locations` - Get all company locations
+- `POST /companies/payment-methods` - Add a new payment method
+- `GET /companies/payment-methods` - Get all company payment methods
+- `PATCH /companies/me/logo` - Upload or update company logo
+- `GET /companies/stats/co2-saved` - Get total CO2 saved
+- `GET /companies/stats/active-listings` - Get active listings
+- `PUT /companies/stats/profit-last-30-days` - Get company profit from the last 30 days
 
 ### Listings
 
-- `GET /listings` - List (filters: material_type, location)
-- `GET /listings/:id` - Details
-- `POST /listings` - Create
-- `PUT /listings/:id` - Update
-- `DELETE /listings/:id` - Delete
+- `GET /listings` - List (filters: material_type, min_price, max_price, condition, etc.)
+- `GET /listings/home-page` - Get listings for the home page
+- `GET /listings/my` - Get authenticated company listings
+- `GET /listings/:id` - Get listing details
+- `POST /listings` - Create a new listing
+- `PUT /listings/:id` - Update listing (owner only)
+- `DELETE /listings/:id` - Delete listing (owner only)
 
 ### Orders
 
 - `POST /orders` - Create order
-- `GET /orders/me` - My orders
+- `GET /orders/my` - My orders
 - `GET /orders/:id` - Details
-- `PATCH /orders/:id` - Update status
+- `PATCH /orders/:id/status` - Update status
 
 ### Pickup
 
 - `GET /listings/:id/pickup-slots` - Available slots
 - `POST /listings/:id/pickup-slots` - Create slot
-
-### Saved Listings
-
-- `GET /saved-listings` - Saved listings
-- `POST /saved-listings/:listingId` - Save listing
-- `DELETE /saved-listings/:listingId` - Remove saved listing
 
 ## 🗄️ Database Structure (high-level)
 
@@ -129,7 +146,7 @@ Supporting entities:
 
 ## 📈 Business Model
 
-- 10% transaction fee
+- 5% transaction fee
 - Premium subscription (advanced features & analytics)
 - Future monetization via logistics and ESG reporting
 
