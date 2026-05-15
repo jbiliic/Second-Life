@@ -8,9 +8,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
-    define: {
-      "process.env.VITE_SERVER_URL": JSON.stringify(env.VITE_SERVER_URL),
-    },
     server: {
       proxy: {
         "/api": {
