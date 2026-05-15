@@ -42,7 +42,7 @@ export class AuthController {
     @Get('confirm-reset-password')
     confirmResetPassword(@Query('token') token: string, @Res() res: Response) {
         this.authService.confirmResetPassword(token);
-        return res.redirect(process.env.CORS_ORIGIN!);
+        return res.redirect(`${process.env.APP_URL}/login`);
     }
 
     @Get('/validate')
