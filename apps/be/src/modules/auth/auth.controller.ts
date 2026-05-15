@@ -26,8 +26,9 @@ export class AuthController {
     }
 
     @Get('verify')
-    async verifyEmail(@Query('token') token: string) {
-        return await this.authService.verifyEmail(token);
+    async verifyEmail(@Query('token') token: string, @Res() res: Response) {
+        await this.authService.verifyEmail(token);
+        return res.redirect(`${process.env.APP_URL}/home`);
     }
     @Post('login')
     async login(@Body() dto: LoginDto) {
