@@ -35,6 +35,19 @@ Deployed application is available here:
 
 > **Note:** Application is hosted on Render's free tier. On the first visit, the backend and database may take a short time to wake up, so initial loading might take some time.
 
+> **Note #2:** For the best experience, set the screen width to approximately **390px**, as the application was primarily designed and optimized according to the original Figma mobile layout.
+
+> **Note #3:** Currently deployed version of the application is based on the `prod` branch.
+
+## Test Users
+
+Following users are pre-created for testing different platform functionalities:
+
+| User       | Email                 | Password  |
+| ---------- | --------------------- | --------- |
+| Company #1 | info@ekomaterijali.hr | Test1234! |
+| Company #2 | info@reciklazaplus.hr | Test1234! |
+
 ## 🎨 Prototype
 
 You can explore the interactive platform prototype on Figma:
