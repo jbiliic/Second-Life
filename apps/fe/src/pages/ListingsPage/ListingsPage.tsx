@@ -5,11 +5,9 @@ import Searchbar from '@/components/Searchbar/Searchbar';
 import { useNavbar } from '@/contexts/NavbarContext';
 import { useGetListings } from '@/hooks/useGetListings';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from './ListingsPage.module.css';
 
 const ListingsPage = () => {
-    const navigate = useNavigate();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
     const [filters, setFilters] = useState({
@@ -134,9 +132,6 @@ const ListingsPage = () => {
                     Sljedeća
                 </button>
             </div>
-            <button onClick={() => navigate('/listings/1')} className={styles.paginationButton}>
-                Testiraj detalje
-            </button>
         </div>
     );
 };
