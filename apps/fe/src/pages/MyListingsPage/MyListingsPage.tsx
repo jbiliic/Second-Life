@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom';
 import emptyStateImg from '@/assets/emptyStateListings.png';
 import { ListingCardMyListings } from '@/components/ListingCardMyListings/ListingCardMyListings';
 import { useListings, type ListingFilter } from '@/hooks/useGetMyListings';
+import { useNavigate } from 'react-router-dom';
 import styles from './MyListingsPage.module.css';
 
 const FILTERS: { key: ListingFilter; label: string }[] = [

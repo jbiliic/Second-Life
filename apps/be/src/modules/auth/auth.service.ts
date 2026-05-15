@@ -77,11 +77,12 @@ export class AuthService {
 
         const payload = {
             id: company.id,
-            isAdmin: false,
-            isVerified: company.is_verified,
         } as AuthenticatedUser;
 
-        return { access_token: this.jwtService.sign(payload) };
+        return {
+            access_token: this.jwtService.sign(payload),
+            companyName: company.name,
+        };
     }
 
     async verifyEmail(token: string) {
@@ -106,13 +107,11 @@ export class AuthService {
 
         const payload = {
             id: company.id,
-            isAdmin: false,
-            isVerified: company.is_verified,
         } as AuthenticatedUser;
 
         const token = this.jwtService.sign(payload);
 
-        return { access_token: token };
+        return { access_token: token, companyName: company.name };
     }
 
     async resetPassword(email: string) {
@@ -145,5 +144,34 @@ export class AuthService {
 
         await this.cache.del(`reset:${token}`);
         return { message: 'Password reset successful' };
+    }
+
+    async validateAndRefreshToken(token: string) {
+        try {
+            const decoded = this.jwtService.verify(token);
+            const company = await this.prisma.company.findUnique({ where: { id: decoded.id } });
+
+            if (!company) {
+                throw new UnauthorizedException('Company not found');
+            }
+
+            const currentTime = Math.floor(Date.now() / 1000);
+            const timeUntilExpiration = decoded.exp - currentTime;
+            let newToken: string | undefined = undefined;
+
+            if (timeUntilExpiration < 600) {
+                const payload = {
+                    id: company.id,
+                } as AuthenticatedUser;
+                newToken = this.jwtService.sign(payload);
+            }
+
+            return {
+                companyName: company.name,
+                ...(newToken && { token: newToken }),
+            };
+        } catch (error) {
+            throw new UnauthorizedException('Invalid or expired token');
+        }
     }
 }

@@ -31,9 +31,28 @@ export class CloudinaryService {
             resource_type: 'image',
         });
 
-        return {
-            url: result.secure_url,
-            public_id: result.public_id,
-        };
+        return result.secure_url;
+    }
+
+    async uploadImages(files: Express.Multer.File[]) {
+        if (!files || files.length === 0) {
+            throw new BadRequestException('At least one file is required');
+        }
+
+        const urls = await Promise.all(
+            files.map(async (file) => {
+                const dataUrl = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+                const result = await cloudinary.uploader.unsigned_upload(
+                    dataUrl,
+                    this.uploadPreset,
+                    {
+                        resource_type: 'image',
+                    },
+                );
+                return result.secure_url;
+            }),
+        );
+
+        return urls;
     }
 }

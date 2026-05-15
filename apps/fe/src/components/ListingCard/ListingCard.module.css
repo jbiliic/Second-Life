@@ -1,0 +1,80 @@
+.card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 98px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-radius: var(--radius-card);
+    padding: var(--card-padding);
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: opacity var(--motion-fast) var(--motion-ease);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.card:active {
+    opacity: 0.7;
+}
+
+.image {
+    width: 75px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: var(--radius-input);
+    flex-shrink: 0;
+    background-color: var(--color-bg-surface-secondary);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+.title {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: var(--body-s-size);
+    line-height: var(--body-s-line);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.price {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 14px;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.caption {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 14px;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

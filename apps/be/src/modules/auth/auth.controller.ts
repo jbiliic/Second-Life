@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    Body,
+    Patch,
+    Param,
+    Delete,
+    Query,
+    Res,
+    UnauthorizedException,
+    Req,
+} from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/loginDto.dto';
@@ -31,5 +43,12 @@ export class AuthController {
     confirmResetPassword(@Query('token') token: string, @Res() res: Response) {
         this.authService.confirmResetPassword(token);
         return res.redirect(process.env.CORS_ORIGIN!);
+    }
+
+    @Get('/validate')
+    async validate(@Req() req: Request) {
+        const token = req.headers['authorization']?.split(' ')[1];
+        if (!token) throw new UnauthorizedException('No token provided');
+        return this.authService.validateAndRefreshToken(token);
     }
 }

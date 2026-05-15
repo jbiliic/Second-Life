@@ -10,7 +10,9 @@ import {
     Put,
     Query,
     Req,
+    UploadedFiles,
     UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserGuard } from '../../common/auth/guards/user.guard';
@@ -23,6 +25,8 @@ import { PaginatedListingsDto } from './dto/getListingsPaginated.dto';
 import { GetListingDto } from './dto/getSingleListing.dto';
 import { UpdateListingDto } from './dto/updateListing.dto';
 import { ListingsService } from './listings.service';
+import { GetMyListingsDto } from './dto/getMyListingsQuery.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Listings')
 @Controller('listings')
@@ -52,7 +56,7 @@ export class ListingsController {
     @ApiResponse({ status: 200, type: [MyListingCardDto] })
     getMyListings(
         @Req() req: { user: AuthenticatedUser },
-        @Query() query: { status?: string },
+        @Query() query: GetMyListingsDto,
     ): Promise<MyListingCardDto[]> {
         return this.listingsService.getMyListings(req.user.id, query.status);
     }
@@ -74,10 +78,16 @@ export class ListingsController {
     @Post()
     @UseGuards(UserGuard)
     @ApiBearerAuth()
+    @UseInterceptors(FilesInterceptor('images'))
     @ApiOperation({ summary: 'Create a new listing' })
     @ApiResponse({ status: 201, type: GetListingDto })
-    createListing(@Req() req: { user: AuthenticatedUser }, @Body() dto: CreateListingDto) {
-        return this.listingsService.createListing(req.user.id, dto);
+    createListing(
+        @Req() req: { user: AuthenticatedUser },
+        @UploadedFiles() files: Express.Multer.File[],
+        @Body('data') data: string,
+    ) {
+        const dto: CreateListingDto = JSON.parse(data);
+        return this.listingsService.createListing(req.user.id, dto, files);
     }
 
     @Put(':id')

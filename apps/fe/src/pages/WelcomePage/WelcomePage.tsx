@@ -1,10 +1,10 @@
 import Button from '@/components/Button/Button';
 import Identity from '@/components/Identity/Identity';
-import { Link, useNavigate } from 'react-router-dom';
-import styles from './Welcome.module.css';
 import { routes } from '@/constants/routes';
+import { Link, useNavigate } from 'react-router-dom';
+import styles from './WelcomePage.module.css';
 
-const Welcome = () => {
+const WelcomePage = () => {
     const navigate = useNavigate();
     return (
         <div className={styles.container}>
@@ -23,4 +23,4 @@ const Welcome = () => {
     );
 };
 
-export default Welcome;
+export default WelcomePage;

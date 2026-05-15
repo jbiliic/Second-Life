@@ -7,42 +7,26 @@ import { GetListingsQueryDto } from './dto/getListingQuery.dto';
 import { PaginatedListingsDto } from './dto/getListingsPaginated.dto';
 import { GetListingDto } from './dto/getSingleListing.dto';
 import { UpdateListingDto } from './dto/updateListing.dto';
+import { formatDateHr } from '../../common/utils/formatDate';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class ListingsService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly cronRelistService: CronRelistService,
+        private readonly cloudinary: CloudinaryService,
     ) {}
 
-    private formatDateHr(date: Date): string {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}.${month}.${year}.`;
-    }
+    async createListing(companyId: string, dto: CreateListingDto, files: Express.Multer.File[]) {
+        const imageUrls = await this.cloudinary.uploadImages(files);
 
-    private normalizeMyListingsStatus(status?: string): 'active' | 'expired' | 'all' {
-        if (!status) {
-            return 'all';
-        }
+        const images = imageUrls.map((url, index) => ({
+            image_url: url,
+            is_primary: index === 0,
+            sort_order: index,
+        }));
 
-        if (status === 'aktivno') {
-            return 'active';
-        }
-
-        if (status === 'sve') {
-            return 'all';
-        }
-
-        if (status === 'active' || status === 'expired' || status === 'all') {
-            return status;
-        }
-
-        return 'all';
-    }
-
-    async createListing(companyId: string, dto: CreateListingDto) {
         const listing = await this.prisma.listing.create({
             data: {
                 company_id: companyId,
@@ -59,9 +43,7 @@ export class ListingsService {
                 delivery_available: dto.delivery_available,
                 available_until: new Date(dto.available_until),
                 is_recurring: dto.is_recurring,
-                images: {
-                    create: dto.images,
-                },
+                images: { create: images },
                 pickup_slots: dto.pickup_slots
                     ? {
                           create: dto.pickup_slots.map((slot) => ({
@@ -87,45 +69,11 @@ export class ListingsService {
             },
         });
 
-        await this.checkAlertsForListing(listing.id);
-
         if (listing.is_recurring && listing.recurring_schedules.length > 0) {
             await this.cronRelistService.registerCronJob(listing.recurring_schedules[0].id);
         }
 
         return listing;
-    }
-
-    async checkAlertsForListing(listingId: string) {
-        const listing = await this.prisma.listing.findUniqueOrThrow({
-            where: { id: listingId },
-            include: {
-                location: true,
-                company: true,
-            },
-        });
-
-        await this.prisma.alert.findMany({
-            where: {
-                is_active: true,
-                material_type: listing.material_type,
-                condition: listing.condition,
-                category: listing.listing_category,
-                unit: listing.unit,
-                max_price_per_unit: {
-                    lte: listing.price_per_unit,
-                },
-                min_quantity: {
-                    lte: listing.quantity,
-                },
-            },
-            select: {
-                latitude: true,
-                longitude: true,
-                max_distance_km: true,
-                company_id: true,
-            },
-        });
     }
 
     async getHomePageListings(companyId: string) {
@@ -139,6 +87,7 @@ export class ListingsService {
         });
 
         return listings.map((listing) => ({
+            id: listing.id,
             name: listing.title,
             material_condition: listing.condition,
             quantity: Number(listing.quantity),
@@ -150,7 +99,6 @@ export class ListingsService {
     }
 
     async getMyListings(companyId: string, status?: string) {
-        const normalizedStatus = this.normalizeMyListingsStatus(status);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -158,12 +106,12 @@ export class ListingsService {
             company_id: companyId,
         };
 
-        if (normalizedStatus === 'active') {
+        if (status === 'active') {
             where.is_active = true;
             where.available_until = { gte: today };
         }
 
-        if (normalizedStatus === 'expired') {
+        if (status === 'expired') {
             where.OR = [{ is_active: false }, { available_until: { lt: today } }];
         }
 
@@ -201,7 +149,7 @@ export class ListingsService {
                           Number(listing.location.longitude),
                       )
                     : 0,
-            expiresAt: this.formatDateHr(listing.available_until),
+            expiresAt: formatDateHr(listing.available_until),
             pricePerUnit: Number(listing.price_per_unit),
             imageUrl: listing.images[0]?.image_url ?? null,
         }));
@@ -214,21 +162,62 @@ export class ListingsService {
 
         const where: any = {
             is_active: true,
-            ...(query.material_type && { material_type: query.material_type }),
-            ...(query.condition && { condition: query.condition }),
-            ...(query.listing_category && { listing_category: query.listing_category }),
-            ...(query.unit && { unit: query.unit }),
+
+            ...(query.search && {
+                OR: [
+                    {
+                        title: {
+                            contains: query.search,
+                            mode: 'insensitive',
+                        },
+                    },
+                    {
+                        location: {
+                            city: {
+                                contains: query.search,
+                                mode: 'insensitive',
+                            },
+                        },
+                    },
+                ],
+            }),
+
+            ...(query.material_type && {
+                material_type: query.material_type,
+            }),
+
+            ...(query.condition && {
+                condition: query.condition,
+            }),
+
+            ...(query.listing_category && {
+                listing_category: query.listing_category,
+            }),
+
+            ...(query.unit && {
+                unit: query.unit,
+            }),
+
             ...(query.delivery_available !== undefined && {
                 delivery_available: query.delivery_available,
             }),
+
             ...((query.min_price !== undefined || query.max_price !== undefined) && {
                 price_per_unit: {
-                    ...(query.min_price !== undefined && { gte: query.min_price }),
-                    ...(query.max_price !== undefined && { lte: query.max_price }),
+                    ...(query.min_price !== undefined && {
+                        gte: query.min_price,
+                    }),
+
+                    ...(query.max_price !== undefined && {
+                        lte: query.max_price,
+                    }),
                 },
             }),
+
             ...(query.min_quantity !== undefined && {
-                quantity: { gte: query.min_quantity },
+                quantity: {
+                    gte: query.min_quantity,
+                },
             }),
         };
 
@@ -296,11 +285,25 @@ export class ListingsService {
             const distanceMap = new Map(pageIds.map((l) => [l.id, l.distance_km]));
 
             const listings = await this.prisma.listing.findMany({
-                where: { id: { in: pageIds.map((l) => l.id) } },
+                where: {
+                    id: {
+                        in: pageIds.map((l) => l.id),
+                    },
+                },
+
                 include: {
-                    images: { where: { is_primary: true }, take: 1 },
+                    images: {
+                        where: { is_primary: true },
+                        take: 1,
+                    },
+
                     location: true,
-                    company: { select: { name: true } },
+
+                    company: {
+                        select: {
+                            name: true,
+                        },
+                    },
                 },
             });
 
@@ -337,9 +340,18 @@ export class ListingsService {
                 skip,
                 take: limit,
                 include: {
-                    images: { where: { is_primary: true }, take: 1 },
+                    images: {
+                        where: { is_primary: true },
+                        take: 1,
+                    },
+
                     location: true,
-                    company: { select: { name: true } },
+
+                    company: {
+                        select: {
+                            name: true,
+                        },
+                    },
                 },
             }),
         ]);
@@ -402,6 +414,7 @@ export class ListingsService {
                         id: true,
                         name: true,
                         logo_url: true,
+                        is_verified: true,
                     },
                 },
             },
@@ -427,6 +440,7 @@ export class ListingsService {
                 id: listing.company.id,
                 name: listing.company.name,
                 logo_url: listing.company.logo_url ?? null,
+                is_verified: listing.company.is_verified,
             },
             location: {
                 city: listing.location.city,

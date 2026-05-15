@@ -1,0 +1,30 @@
+.searchbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--space-1);
+
+    width: 100%;
+    max-width: 357px;
+    height: fit-content;
+
+    padding: 13px;
+
+    border: 1px solid var(--color-text-secondary);
+    border-radius: 16px;
+}
+
+.icon {
+    font-size: var(--body-m-size);
+    opacity: 0.6;
+}
+
+.input {
+    width: 100%;
+
+    border: none;
+    outline: none;
+
+    font-size: var(--body-m-size);
+    background: transparent;
+}
