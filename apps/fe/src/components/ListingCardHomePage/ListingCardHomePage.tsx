@@ -8,6 +8,7 @@ interface ListingCardHomePageProps {
     isAvailable: boolean;
     imageUrl?: string;
     className?: string;
+    onClick?: () => void;
 }
 
 const ListingCardHomePage = ({
@@ -18,9 +19,10 @@ const ListingCardHomePage = ({
     isAvailable,
     imageUrl,
     className = '',
+    onClick,
 }: ListingCardHomePageProps) => {
     return (
-        <article className={`${styles.card} ${className}`}>
+        <article className={`${styles.card} ${className}`} onClick={onClick}>
             {imageUrl ? (
                 <img className={styles.image} src={imageUrl} alt={name} />
             ) : (

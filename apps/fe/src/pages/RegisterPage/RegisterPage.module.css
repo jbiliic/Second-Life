@@ -220,11 +220,10 @@
     line-height: var(--body-s-line);
     font-family: var(--font-body);
     font-weight: 600;
-    color: #2f3437;
+    color: var(--color-action-primary);
     cursor: pointer;
     border-radius: 0;
-    text-decoration: underline;
-    text-align: center;
+    text-decoration: none;
 }
 .nextButton {
     width: 100%;

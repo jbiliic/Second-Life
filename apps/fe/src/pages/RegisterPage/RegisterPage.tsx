@@ -65,6 +65,8 @@ export default function RegisterPage() {
             alert(error);
             return;
         }
+        if (registryFile) {
+        }
 
         login(data.access_token, data.companyName);
         setStep(2);
@@ -248,7 +250,7 @@ export default function RegisterPage() {
                         <button
                             type="button"
                             className={styles.loginLink}
-                            onClick={() => navigate(routes.LOGIN)}
+                            onClick={() => navigate(routes.HOME)}
                         >
                             Preskoči za sada
                         </button>

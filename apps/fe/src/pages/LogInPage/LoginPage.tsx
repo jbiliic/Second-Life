@@ -35,11 +35,7 @@ export default function Login() {
             return;
         }
 
-<<<<<<< HEAD
-        localStorage.setItem('access_token', data.access_token);
-=======
         login(data.access_token, data.companyName);
->>>>>>> 1a42667af3b550c81822f73e3c1af31c069d95e7
         navigate(routes.HOME);
     };
 

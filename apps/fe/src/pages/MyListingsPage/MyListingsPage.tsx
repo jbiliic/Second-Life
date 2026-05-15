@@ -1,5 +1,6 @@
 import emptyStateImg from '@/assets/emptyStateListings.png';
 import { ListingCardMyListings } from '@/components/ListingCardMyListings/ListingCardMyListings';
+import { Loader } from '@/components/Loader/Loader';
 import { useListings, type ListingFilter } from '@/hooks/useGetMyListings';
 import { useNavigate } from 'react-router-dom';
 import styles from './MyListingsPage.module.css';
@@ -33,10 +34,8 @@ export const MyListingsPage = () => {
             </nav>
 
             {loading ? (
-                <div className={styles.skeleton} aria-busy="true" aria-label="Učitavanje oglasa">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className={styles.skeletonCard} />
-                    ))}
+                <div className={styles.loaderWrapper}>
+                    <Loader />
                 </div>
             ) : isEmpty ? (
                 <div className={styles.emptyState}>
