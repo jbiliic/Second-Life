@@ -35,11 +35,16 @@ export class AuthService {
     ) {}
 
     async register(registerDto: RegisterCompanyDto) {
-        const existingCompany = await this.prisma.company.findUnique({
-            where: { email: registerDto.email },
+        const existingCompany = await this.prisma.company.findFirst({
+            where: {
+                OR: [{ email: registerDto.email }, { oib: registerDto.oib }],
+            },
         });
         if (existingCompany) {
-            throw new Error('Email already in use');
+            if (existingCompany.email === registerDto.email) {
+                throw new BadRequestException('Email already in use');
+            }
+            throw new BadRequestException('OIB already in use');
         }
 
         const hashedPassword = await bcrypt.hash(registerDto.password, 10);
@@ -71,9 +76,13 @@ export class AuthService {
         await this.cache.set(
             `verify:${verificationToken}`,
             { companyId: company.id } as VerifyPayload,
-            1000 * 60 * 5,
+            1000 * 60 * 30,
         );
-        await this.mailService.sendVerificationEmail(company.email, verificationToken);
+        await this.mailService
+            .sendVerificationEmail(company.email, verificationToken)
+            .catch((err) => {
+                console.error('Failed to send verification email:', err);
+            });
 
         const payload = {
             id: company.id,
@@ -124,9 +133,13 @@ export class AuthService {
         await this.cache.set(
             `reset:${token}`,
             { companyId: company.id, newPassword } as ResetPayload,
-            1000 * 60 * 5,
+            1000 * 60 * 30,
         );
-        await this.mailService.sendPasswordResetEmail(company.email, newPassword, token);
+        await this.mailService
+            .sendPasswordResetEmail(company.email, newPassword, token)
+            .catch((err) => {
+                console.error('Failed to send password reset email:', err);
+            });
 
         return { message: 'Password reset email sent' };
     }

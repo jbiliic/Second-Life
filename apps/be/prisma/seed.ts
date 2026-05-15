@@ -76,8 +76,6 @@ async function main() {
             data: {
                 name: 'EcoMetal Split d.o.o.',
                 oib: '11111111111',
-                mbs: '1000000001',
-                phone: '+385911111111',
                 email: 'info@ecometal.hr',
                 password: 'hashed',
                 locations: { connect: { id: locations[0].id } },
@@ -87,8 +85,6 @@ async function main() {
             data: {
                 name: 'Zagrebačka Reciklaža d.o.o.',
                 oib: '22222222222',
-                mbs: '1000000002',
-                phone: '+385922222222',
                 email: 'info@reciklaza.hr',
                 password: 'hashed',
                 locations: { connect: { id: locations[1].id } },
@@ -98,8 +94,6 @@ async function main() {
             data: {
                 name: 'Adria Plast Rijeka',
                 oib: '33333333333',
-                mbs: '1000000003',
-                phone: '+385933333333',
                 email: 'info@adria-plast.hr',
                 password: 'hashed',
                 locations: { connect: { id: locations[2].id } },
@@ -109,8 +103,6 @@ async function main() {
             data: {
                 name: 'Zadarski Industrijski Otpad',
                 oib: '44444444444',
-                mbs: '1000000004',
-                phone: '+385944444444',
                 email: 'info@zadar-otpad.hr',
                 password: 'hashed',
                 locations: { connect: { id: locations[3].id } },

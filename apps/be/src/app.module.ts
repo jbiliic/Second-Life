@@ -22,7 +22,7 @@ import { ListingsModule } from './modules/listings/listings.module';
             useFactory: async () => ({
                 store: redisStore,
                 url: process.env.REDIS_URL,
-                ttl: 1000 * 60 * 5, // 5 minutes default
+                ttl: 1000 * 60 * 30, // 30 minutes default
             }),
         }),
         ConfigModule.forRoot({
