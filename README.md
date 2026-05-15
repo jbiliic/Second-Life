@@ -39,7 +39,7 @@ Deployed application is available here:
 
 > **Note #3:** Currently deployed version of the application is based on the `prod` branch.
 
-## Test Users
+## 👤 Test Users
 
 Following users are pre-created for testing different platform functionalities:
 
