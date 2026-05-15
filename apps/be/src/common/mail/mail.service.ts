@@ -1,20 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { createTransport, Transporter } from 'nodemailer';
+import { createTransport } from 'nodemailer';
 
 @Injectable()
 export class MailService {
-    private transporter: Transporter;
+    private transporter: any;
 
     constructor() {
-        this.transporter = createTransport({
-            host: process.env.EMAIL_HOST,
-            port: 587, // ← promijeni ovo
+        const config = {
+            host: 'smtp.gmail.com',
+            port: 587,
             secure: false,
+            family: 4,
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS,
             },
-        });
+        };
+        this.transporter = createTransport(config as any); // ← cast na any
     }
 
     async sendVerificationEmail(to: string, token: string) {
