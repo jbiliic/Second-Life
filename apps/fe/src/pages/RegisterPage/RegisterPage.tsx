@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import Button from '@/components/Button/Button';
 import { routes } from '@/constants/routes';
 import styles from './RegisterPage.module.css';
@@ -8,14 +8,17 @@ import uploadIcon from '@/assets/upload.png';
 import { type RegisterDTO } from './dto/register.dto';
 import client from '@/api/client';
 import LocationPicker from '@/components/LocationPicker/LocationPicker';
-import type { GeoAddress } from '@/util/getGeoLocation';
 import FileUpload from '@/components/FileUpload/FileUpload';
+import { Input } from '@/components/InputForm/InputForm';
+import { useAuth } from '@/providers/auth/useAuth';
 
 interface RegistrationResponse {
     access_token: string;
+    companyName: string;
 }
 
 export default function RegisterPage() {
+    const { login } = useAuth();
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
 
@@ -25,10 +28,8 @@ export default function RegisterPage() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [agreed, setAgreed] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [location, setLocation] = useState<GeoAddress | null>(null);
+    const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
     const [showMap, setShowMap] = useState(false);
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [registryFile, setRegistryFile] = useState<File | null>(null);
@@ -61,11 +62,11 @@ export default function RegisterPage() {
         );
 
         if (error || !data) {
-            alert('Došlo je do pogreške prilikom registracije. Molimo pokušajte ponovno.');
+            alert(error);
             return;
         }
 
-        localStorage.setItem('access_token', data.access_token);
+        login(data.access_token, data.companyName);
         setStep(2);
     };
 
@@ -76,26 +77,23 @@ export default function RegisterPage() {
             const formData = new FormData();
             formData.append('file', logoFile);
 
-            const { data, error } = await client.post<{ url: string; public_id: string }, FormData>(
-                '/cloudinary/upload',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                },
-            );
-
+            const { data, error } = await client.patch('/companies/me/logo', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
             if (error || !data) {
-                alert('Učitavanje logotipa nije uspjelo. Pokušaj ponovno.');
-                return;
+                alert(
+                    'Došlo je do pogreške prilikom učitavanja logotipa. Molimo pokušajte ponovno kasnije.',
+                );
             }
-
-            await client.patch('/companies/me/logo', { logo_url: data.url });
         }
 
         if (location) {
-            await client.post('/companies/locations', location);
+            const { data, error } = await client.post('/companies/locations', location);
+            if (error || !data) {
+                alert(
+                    'Došlo je do pogreške prilikom dodavanja lokacije. Molimo pokušajte ponovno kasnije.',
+                );
+            }
         }
     };
 
@@ -110,98 +108,55 @@ export default function RegisterPage() {
                         </div>
 
                         <div className={styles.form}>
-                            <div className={styles.field}>
-                                <label className={styles.label}>Naziv firme</label>
-                                <input
-                                    className={`${styles.input} ${errors.name ? styles.inputError : ''}`}
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => {
-                                        setName(e.target.value);
-                                        setErrors((p) => ({ ...p, name: '' }));
-                                    }}
-                                />
-                                {errors.name && <p className={styles.errorText}>{errors.name}</p>}
-                            </div>
-
-                            <div className={styles.field}>
-                                <label className={styles.label}>OIB</label>
-                                <input
-                                    className={`${styles.input} ${errors.oib ? styles.inputError : ''}`}
-                                    type="text"
-                                    maxLength={11}
-                                    value={oib}
-                                    onChange={(e) => {
-                                        setOib(e.target.value);
-                                        setErrors((p) => ({ ...p, oib: '' }));
-                                    }}
-                                />
-                                {errors.oib && <p className={styles.errorText}>{errors.oib}</p>}
-                            </div>
-
-                            <div className={styles.field}>
-                                <label className={styles.label}>Email</label>
-                                <input
-                                    className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => {
-                                        setEmail(e.target.value);
-                                        setErrors((p) => ({ ...p, email: '' }));
-                                    }}
-                                />
-                                {errors.email && <p className={styles.errorText}>{errors.email}</p>}
-                            </div>
-
-                            <div className={styles.field}>
-                                <label className={styles.label}>Lozinka</label>
-                                <div className={styles.inputWrapper}>
-                                    <input
-                                        className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
-                                        type={showPassword ? 'text' : 'password'}
-                                        value={password}
-                                        onChange={(e) => {
-                                            setPassword(e.target.value);
-                                            setErrors((p) => ({ ...p, password: '' }));
-                                        }}
-                                    />
-                                    <button
-                                        type="button"
-                                        className={styles.eyeButton}
-                                        onClick={() => setShowPassword((v) => !v)}
-                                    >
-                                        {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                                    </button>
-                                </div>
-                                {errors.password && (
-                                    <p className={styles.errorText}>{errors.password}</p>
-                                )}
-                            </div>
-
-                            <div className={styles.field}>
-                                <label className={styles.label}>Potvrda lozinke</label>
-                                <div className={styles.inputWrapper}>
-                                    <input
-                                        className={`${styles.input} ${errors.confirmPassword ? styles.inputError : ''}`}
-                                        type={showConfirm ? 'text' : 'password'}
-                                        value={confirmPassword}
-                                        onChange={(e) => {
-                                            setConfirmPassword(e.target.value);
-                                            setErrors((p) => ({ ...p, confirmPassword: '' }));
-                                        }}
-                                    />
-                                    <button
-                                        type="button"
-                                        className={styles.eyeButton}
-                                        onClick={() => setShowConfirm((v) => !v)}
-                                    >
-                                        {showConfirm ? <Eye size={20} /> : <EyeOff size={20} />}
-                                    </button>
-                                </div>
-                                {errors.confirmPassword && (
-                                    <p className={styles.errorText}>{errors.confirmPassword}</p>
-                                )}
-                            </div>
+                            <Input
+                                label="Naziv firme"
+                                value={name}
+                                onChange={(v) => {
+                                    setName(v);
+                                    setErrors((p) => ({ ...p, name: '' }));
+                                }}
+                                error={errors.name}
+                            />
+                            <Input
+                                label="OIB"
+                                value={oib}
+                                onChange={(v) => {
+                                    setOib(v);
+                                    setErrors((p) => ({ ...p, oib: '' }));
+                                }}
+                                error={errors.oib}
+                                maxLength={11}
+                            />
+                            <Input
+                                label="Email"
+                                value={email}
+                                onChange={(v) => {
+                                    setEmail(v);
+                                    setErrors((p) => ({ ...p, email: '' }));
+                                }}
+                                error={errors.email}
+                                type="email"
+                            />
+                            <Input
+                                label="Lozinka"
+                                value={password}
+                                onChange={(v) => {
+                                    setPassword(v);
+                                    setErrors((p) => ({ ...p, password: '' }));
+                                }}
+                                error={errors.password}
+                                type="password"
+                            />
+                            <Input
+                                label="Potvrda lozinke"
+                                value={confirmPassword}
+                                onChange={(v) => {
+                                    setConfirmPassword(v);
+                                    setErrors((p) => ({ ...p, confirmPassword: '' }));
+                                }}
+                                error={errors.confirmPassword}
+                                type="password"
+                            />
 
                             <div className={styles.checkboxRow}>
                                 <input
@@ -275,7 +230,7 @@ export default function RegisterPage() {
                                     </span>
                                     <span className={styles.uploadSubtitle}>
                                         {location
-                                            ? `${location.street} ${location.street_number}, ${location.city}`
+                                            ? `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`
                                             : 'Upišite adresu ili odaberite na mapi'}
                                     </span>
                                 </div>
@@ -300,8 +255,8 @@ export default function RegisterPage() {
                     </div>
                     {showMap && (
                         <LocationPicker
-                            onConfirm={(address) => {
-                                setLocation(address);
+                            onConfirm={(coords) => {
+                                setLocation(coords);
                                 setShowMap(false);
                             }}
                             onClose={() => setShowMap(false)}

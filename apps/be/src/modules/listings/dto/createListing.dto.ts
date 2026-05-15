@@ -18,20 +18,6 @@ import {
     ValidateNested,
 } from 'class-validator';
 
-export class CreateListingImageDto {
-    @ApiProperty({ example: 'https://cdn.example.com/image.png' })
-    @IsUrl()
-    image_url: string;
-
-    @ApiProperty()
-    @IsBoolean()
-    is_primary: boolean;
-
-    @ApiProperty()
-    @IsInt()
-    sort_order: number;
-}
-
 export class CreatePickupSlotDto {
     @ApiProperty({ example: '2026-12-31' })
     @IsDateString()
@@ -119,12 +105,6 @@ export class CreateListingDto {
     @IsOptional()
     @IsBoolean()
     is_recurring?: boolean;
-
-    @ApiProperty({ type: [CreateListingImageDto] })
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => CreateListingImageDto)
-    images: CreateListingImageDto[];
 
     @ApiPropertyOptional({ type: [CreatePickupSlotDto] })
     @IsOptional()

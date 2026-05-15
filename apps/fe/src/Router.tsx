@@ -10,6 +10,7 @@ import { MyListingsPage } from './pages/MyListingsPage/MyListingsPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import RegisterPage from './pages/RegisterPage/RegisterPage';
 import WelcomePage from './pages/WelcomePage/WelcomePage';
+import { ProtectedRoute } from './layout/ProtectedRoutes';
 
 export const Router = () => {
     return (
@@ -20,12 +21,14 @@ export const Router = () => {
                 <Route path={routes.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
                 <Route path={routes.REGISTER} element={<RegisterPage />} />
 
-                <Route element={<Layout />}>
-                    <Route path={routes.HOME} element={<HomePage />} />
-                    <Route path={routes.MY_LISTINGS} element={<MyListingsPage />} />
-                    <Route path={routes.LISTINGS} element={<ListingsPage />} />
+                <Route element={<ProtectedRoute />}>
+                    <Route element={<Layout />}>
+                        <Route path={routes.HOME} element={<HomePage />} />
+                        <Route path={routes.MY_LISTINGS} element={<MyListingsPage />} />
+                          <Route path={routes.LISTINGS} element={<ListingsPage />} />
                     <Route path={routes.LISTING_DETAIL} element={<ListingDetailPage />} />
                     <Route path={routes.NOTFOUND} element={<NotFoundPage />} />
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>
