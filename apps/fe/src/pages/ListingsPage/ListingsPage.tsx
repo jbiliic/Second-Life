@@ -4,6 +4,7 @@ import ListingCard from '@/components/ListingCard/ListingCard';
 import Searchbar from '@/components/Searchbar/Searchbar';
 import { useNavbar } from '@/contexts/NavbarContext';
 import { useGetListings } from '@/hooks/useGetListings';
+import { Loader } from 'components/Loader/Loader';
 import { useEffect, useState } from 'react';
 import styles from './ListingsPage.module.css';
 
@@ -86,7 +87,11 @@ const ListingsPage = () => {
             </div>
 
             <div className={styles.listingsContainer}>
-                {loading && <span className={styles.loadingText}>Učitavanje...</span>}
+                {loading && (
+                    <div className={styles.loaderWrapper}>
+                        <Loader />
+                    </div>
+                )}
 
                 {error && <span className={styles.errorText}>{error}</span>}
 
