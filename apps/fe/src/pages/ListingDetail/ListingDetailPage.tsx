@@ -15,6 +15,10 @@ const ListingDetailPage = () => {
 
     const { listing, loading, error } = useGetListing(id || '');
 
+    if (loading) return <span className={styles.loadingText}>Učitavanje...</span>;
+
+    if (error) return <span className={styles.errorText}>{error}</span>;
+
     if (!listing) return <span className={styles.errorText}>Oglas nije pronađen</span>;
 
     const handleTouchStart = (e: React.TouchEvent) => {
@@ -43,10 +47,6 @@ const ListingDetailPage = () => {
 
         console.log('end');
     };
-
-    if (loading) return <span className={styles.loadingText}>Učitavanje...</span>;
-
-    if (error) return <span className={styles.errorText}>{error}</span>;
 
     return (
         <div className={styles.container}>
