@@ -72,6 +72,18 @@ export class AuthService {
             },
         });
 
+        const verificationToken = randomBytes(32).toString('hex');
+        await this.cache.set(
+            `verify:${verificationToken}`,
+            { companyId: company.id } as VerifyPayload,
+            1000 * 60 * 30,
+        );
+        await this.mailService
+            .sendVerificationEmail(company.email, verificationToken)
+            .catch((err) => {
+                console.error('Failed to send verification email:', err);
+            });
+
         const payload = {
             id: company.id,
         } as AuthenticatedUser;
