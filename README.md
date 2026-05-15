@@ -33,6 +33,8 @@ The deployed application is available here:
 
 [Open SecondLife Demo](https://second-life-1.onrender.com/)
 
+> **Note:** Application is hosted on Render's free tier. On the first visit, the backend and database may take a short time to wake up, so initial loading might take some time.
+
 ## 🎨 Prototype
 
 You can explore the interactive platform prototype on Figma:
