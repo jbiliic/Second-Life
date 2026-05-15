@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Patch,
+    Post,
+    Req,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserGuard } from '../../common/auth/guards/user.guard';
 import { AuthenticatedUser } from '../../common/auth/interfaces/authenticatedUser.interface';
@@ -7,6 +17,7 @@ import { LocationDto } from './dto/location.dto';
 import { UpdateLogoDto } from './dto/updateLogo.dto';
 import { UpdateMyProfileDto } from './dto/UpdateMyProfile.dto';
 import { PaymentMethodDto } from './dto/payment.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Company')
 @ApiBearerAuth()
@@ -31,10 +42,19 @@ export class CompaniesController {
     }
 
     @Post('/locations')
+    @UseGuards(UserGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Add a new location to the company' })
     @ApiResponse({ status: 201, type: LocationDto })
-    createLocation(@Req() req: { user: AuthenticatedUser }, @Body() dto: Omit<LocationDto, 'id'>) {
-        return this.companiesService.createAndAddLocation(req.user.id, dto);
+    createLocation(
+        @Req() req: { user: AuthenticatedUser },
+        @Body() body: { latitude: number; longitude: number },
+    ) {
+        return this.companiesService.createLocationFromCoords(
+            req.user.id,
+            body.latitude,
+            body.longitude,
+        );
     }
 
     @Get('/locations')
@@ -64,8 +84,9 @@ export class CompaniesController {
     @Patch('/me/logo')
     @ApiOperation({ summary: 'Update the company logo' })
     @ApiResponse({ status: 200, type: UpdateLogoDto })
-    updateLogo(@Req() req: { user: AuthenticatedUser }, @Body() dto: UpdateLogoDto) {
-        return this.companiesService.updateLogo(req.user.id, dto.logo_url);
+    @UseInterceptors(FileInterceptor('file'))
+    updateLogo(@Req() req: { user: AuthenticatedUser }, @UploadedFile() file: Express.Multer.File) {
+        return this.companiesService.updateLogo(req.user.id, file);
     }
 
     @Get('/stats/co2-saved')

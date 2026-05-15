@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage/RegisterPage';
 import Layout from './layout/Layout';
 import { HomePage } from './pages/HomePage/HomePage';
 import { MyListingsPage } from './pages/MyListingsPage/MyListingsPage';
+import { ProtectedRoute } from './layout/ProtectedRoutes';
 
 export const Router = () => {
     return (
@@ -17,9 +18,11 @@ export const Router = () => {
                 <Route path={routes.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
                 <Route path={routes.REGISTER} element={<RegisterPage />} />
 
-                <Route element={<Layout />}>
-                    <Route path={routes.HOME} element={<HomePage />} />
-                    <Route path={routes.MY_LISTINGS} element={<MyListingsPage />} />
+                <Route element={<ProtectedRoute />}>
+                    <Route element={<Layout />}>
+                        <Route path={routes.HOME} element={<HomePage />} />
+                        <Route path={routes.MY_LISTINGS} element={<MyListingsPage />} />
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>
