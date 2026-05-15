@@ -21,27 +21,27 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Post('register')
-    register(@Body() dto: RegisterCompanyDto) {
-        return this.authService.register(dto);
+    async register(@Body() dto: RegisterCompanyDto) {
+        return await this.authService.register(dto);
     }
 
     @Get('verify')
-    verifyEmail(@Query('token') token: string) {
-        return this.authService.verifyEmail(token);
+    async verifyEmail(@Query('token') token: string) {
+        return await this.authService.verifyEmail(token);
     }
     @Post('login')
-    login(@Body() dto: LoginDto) {
-        return this.authService.login(dto);
+    async login(@Body() dto: LoginDto) {
+        return await this.authService.login(dto);
     }
 
     @Post('reset-password')
-    resetPassword(@Body('email') email: string) {
-        return this.authService.resetPassword(email);
+    async resetPassword(@Body('email') email: string) {
+        return await this.authService.resetPassword(email);
     }
 
     @Get('confirm-reset-password')
-    confirmResetPassword(@Query('token') token: string, @Res() res: Response) {
-        this.authService.confirmResetPassword(token);
+    async confirmResetPassword(@Query('token') token: string, @Res() res: Response) {
+        await this.authService.confirmResetPassword(token);
         return res.redirect(`${process.env.APP_URL}/login`);
     }
 
@@ -49,6 +49,6 @@ export class AuthController {
     async validate(@Req() req: Request) {
         const token = req.headers['authorization']?.split(' ')[1];
         if (!token) throw new UnauthorizedException('No token provided');
-        return this.authService.validateAndRefreshToken(token);
+        return await this.authService.validateAndRefreshToken(token);
     }
 }

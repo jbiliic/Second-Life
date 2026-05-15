@@ -8,7 +8,7 @@ export class MailService {
     }
 
     async sendVerificationEmail(to: string, token: string) {
-        const url = `${process.env.APP_URL}/auth/verify?token=${token}`;
+        const url = `${process.env.VITE_SERVER_URL}/auth/verify?token=${token}`;
         await this.resend.emails.send({
             from: 'SecondLife <onboarding@resend.dev>',
             to,
@@ -29,7 +29,7 @@ export class MailService {
 
     async sendPasswordResetEmail(to: string, newPassword: string, token: string) {
         console.log('Sending password reset email to:', to);
-        const url = `${process.env.APP_URL}/auth/confirm-reset-password?token=${token}`;
+        const url = `${process.env.VITE_SERVER_URL}/auth/confirm-reset-password?token=${token}`;
         await this.resend.emails.send({
             from: 'SecondLife <onboarding@resend.dev>',
             to,
