@@ -29,7 +29,7 @@ SecondLife is a B2B marketplace platform that connects companies with surplus pa
 
 ## 🌐 Live Demo
 
-The deployed application is available here:
+Deployed application is available here:
 
 [Open SecondLife Demo](https://second-life-1.onrender.com/)
 
