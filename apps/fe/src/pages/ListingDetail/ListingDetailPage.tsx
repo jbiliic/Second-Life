@@ -15,7 +15,11 @@ const ListingDetailPage = () => {
 
     const { listing, loading, error } = useGetListing(id || '');
 
-    if (listing === null) return <span className={styles.errorText}>Oglas nije pronađen</span>;
+    if (loading) return <span className={styles.loadingText}>Učitavanje...</span>;
+
+    if (error) return <span className={styles.errorText}>{error}</span>;
+
+    if (!listing) return <span className={styles.errorText}>Oglas nije pronađen</span>;
 
     const handleTouchStart = (e: React.TouchEvent) => {
         startX.current = e.touches[0].clientX;
@@ -44,41 +48,35 @@ const ListingDetailPage = () => {
         console.log('end');
     };
 
-    {
-        loading && <span className={styles.loadingText}>Učitavanje...</span>;
-    }
-
-    {
-        error && <span className={styles.errorText}>{error}</span>;
-    }
-
     return (
         <div className={styles.container}>
             <div className={styles.listingContainer}>
                 <div className={styles.listingDetails}>
-                    <div
-                        className={styles.imageContainer}
-                        aria-label="Slika oglasa"
-                        onTouchStart={handleTouchStart}
-                        onTouchEnd={handleTouchEnd}
-                    >
-                        <img
-                            src={listing.images[activeIndex].image_url}
-                            alt={`Slika ${activeIndex + 1}`}
-                            className={styles.mainImage}
-                        />
+                    {listing.images && listing.images.length > 0 && (
+                        <div
+                            className={styles.imageContainer}
+                            aria-label="Slika oglasa"
+                            onTouchStart={handleTouchStart}
+                            onTouchEnd={handleTouchEnd}
+                        >
+                            <img
+                                src={listing.images[activeIndex].image_url}
+                                alt={`Slika ${activeIndex + 1}`}
+                                className={styles.mainImage}
+                            />
 
-                        <div className={styles.dots}>
-                            {listing.images.map((_, index) => (
-                                <span
-                                    key={index}
-                                    className={`${styles.dot} ${
-                                        index === activeIndex ? styles.activeDot : ''
-                                    }`}
-                                />
-                            ))}
+                            <div className={styles.dots}>
+                                {listing.images.map((_, index) => (
+                                    <span
+                                        key={index}
+                                        className={`${styles.dot} ${
+                                            index === activeIndex ? styles.activeDot : ''
+                                        }`}
+                                    />
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
                     <div className={styles.infoContainer}>
                         <p className={styles.title}>
                             {listing.title} ({listing.condition})
