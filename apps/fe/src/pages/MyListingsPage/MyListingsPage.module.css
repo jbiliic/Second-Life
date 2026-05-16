@@ -185,6 +185,7 @@
 .emptyBtn:hover {
     background-color: var(--color-action-supporting);
 }
+
 .loaderWrapper {
     flex: 1;
     display: flex;

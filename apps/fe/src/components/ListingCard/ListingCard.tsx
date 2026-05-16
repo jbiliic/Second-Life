@@ -5,11 +5,8 @@ export type ListingCardProps = {
     id: string;
     title: string;
     condition: string;
-    quantity: number;
     unit: string;
     location: string;
-    distanceKm: number;
-    expiresAt: string;
     pricePerUnit: number;
     imageUrl: string;
 };
@@ -18,11 +15,8 @@ const ListingCard = ({
     id,
     title,
     condition,
-    quantity,
     unit,
     location,
-    distanceKm,
-    expiresAt,
     pricePerUnit,
     imageUrl,
 }: ListingCardProps) => {
@@ -43,14 +37,10 @@ const ListingCard = ({
                 </span>
 
                 <span className={styles.caption}>
-                    {quantity} {unit}; {pricePerUnit.toFixed(2)} €/{unit}
+                    {pricePerUnit.toFixed(2)} €/{unit}
                 </span>
 
-                <span className={styles.caption}>
-                    {location}, {Math.round(distanceKm)} km
-                </span>
-
-                <span className={styles.caption}>{expiresAt}</span>
+                <span className={styles.caption}>{location}</span>
             </div>
         </div>
     );

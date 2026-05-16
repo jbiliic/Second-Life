@@ -4,6 +4,7 @@ import ListingCard from '@/components/ListingCard/ListingCard';
 import Searchbar from '@/components/Searchbar/Searchbar';
 import { useNavbar } from '@/contexts/NavbarContext';
 import { useGetListings } from '@/hooks/useGetListings';
+import { Loader } from 'components/Loader/Loader';
 import { useEffect, useState } from 'react';
 import styles from './ListingsPage.module.css';
 
@@ -86,7 +87,11 @@ const ListingsPage = () => {
             </div>
 
             <div className={styles.listingsContainer}>
-                {loading && <span className={styles.loadingText}>Učitavanje...</span>}
+                {loading && (
+                    <div className={styles.loaderWrapper}>
+                        <Loader />
+                    </div>
+                )}
 
                 {error && <span className={styles.errorText}>{error}</span>}
 
@@ -98,11 +103,8 @@ const ListingsPage = () => {
                                 id={listing.id}
                                 title={listing.title}
                                 condition={listing.condition}
-                                quantity={0}
                                 unit={listing.unit}
                                 location={listing.city}
-                                distanceKm={listing.distance_km ?? 0}
-                                expiresAt={listing.expires_at ?? ''}
                                 pricePerUnit={listing.price_per_unit}
                                 imageUrl={listing.cover_image_url ?? ''}
                             />

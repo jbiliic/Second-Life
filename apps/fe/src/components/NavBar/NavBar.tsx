@@ -1,9 +1,9 @@
 import { routes } from '@/constants/routes';
 import { useNavbar } from '@/contexts/NavbarContext';
+import { useAuth } from '@/providers/auth/useAuth';
 import { ArrowLeft, Bell, Menu } from 'lucide-react';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import styles from './NavBar.module.css';
-import { useAuth } from '@/providers/auth/useAuth';
 
 type NavbarConfig = {
     title: string;
@@ -14,7 +14,7 @@ type NavbarConfig = {
 const navbarConfig: Record<string, NavbarConfig> = {
     [routes.LISTING_DETAIL]: { title: 'Detalji', showBack: true },
     [routes.HOME]: { title: 'SecondLife', showBack: false, titleClass: styles.titleGreen },
-    [routes.LISTINGS]: { title: 'Moji oglasi', showBack: false },
+    [routes.LISTINGS]: { title: 'Pretraži', showBack: false },
     [routes.MY_LISTINGS]: { title: 'Moji oglasi', showBack: false },
     [routes.CREATE_LISTING]: { title: 'Novi oglas', showBack: true },
     [routes.PROFILE]: { title: 'Profil', showBack: false },

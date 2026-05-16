@@ -2,6 +2,7 @@ import deliveryIcon from '@/assets/icons/delivery-icon.svg';
 import locationIcon from '@/assets/icons/location-icon.svg';
 import Button from '@/components/Button/Button';
 import { useGetListing } from '@/hooks/useGetSingleListing';
+import { Loader } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './ListingDetailPage.module.css';
@@ -15,7 +16,12 @@ const ListingDetailPage = () => {
 
     const { listing, loading, error } = useGetListing(id || '');
 
-    if (loading) return <span className={styles.loadingText}>Učitavanje...</span>;
+    if (loading)
+        return (
+            <div className={styles.loaderWrapper}>
+                <Loader />
+            </div>
+        );
 
     if (error) return <span className={styles.errorText}>{error}</span>;
 
