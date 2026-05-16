@@ -6,9 +6,9 @@ import styles from './Footer.module.css';
 const navItems = [
     { icon: Home, route: routes.HOME },
     { icon: Search, route: routes.LISTINGS },
-    { icon: Plus, route: routes.CREATE_LISTING },
+    { icon: Plus, route: null },
     { icon: MessageCircle, route: null },
-    { icon: User, route: routes.PROFILE },
+    { icon: User, route: null },
 ];
 
 export const Footer = () => {
